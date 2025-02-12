@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UMKM;
 use Illuminate\Http\Request;
 
 class UMKMController extends Controller
@@ -11,7 +12,7 @@ class UMKMController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(UMKM::all());
     }
 
     /**

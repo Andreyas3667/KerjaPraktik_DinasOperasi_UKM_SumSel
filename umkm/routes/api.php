@@ -1,10 +1,5 @@
-use App\Http\Controllers\UMKMcontroller;
-use App\Http\Controllers\Produkcontroller;
+use App\Http\Controllers\UMKMController;
 
-Route::get('/umkms',[UMKMcontroller::class,'index']);
-Route::post('/umkms',[UMKMcontroller::class,'store']);
-Route::get('/umkms/{id}',[UMKMcontroller::class,'show']);
-
-Route::post('/produk',[Produkcontroller::class,'store']);
-Route::put('/produk/{id}',[Produkcontroller::class,'update']);
-Route::delete('/produk/{id}',[Produkcontroller::class,'destroy']);
+Route::get('/umkm', [UMKMController::class, 'index']);
+Route::post('/umkm', [UMKMController::class, 'store']);
+Route::get('/umkm/{id}', [UMKMController::class, 'show']);
