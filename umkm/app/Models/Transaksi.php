@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UMKM extends Model
+class Transaksi extends Model
 {
     //
 }

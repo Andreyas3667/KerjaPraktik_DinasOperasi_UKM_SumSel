@@ -9,23 +9,23 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('produks', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('umkm_id')->constrained()->onDelete('cascade');
-            $table->string('nama');
-            $table->decimal('harga', 10, 2);
-            $table->integer('stok');
+        Schema::create('wilayah', function (Blueprint $table) {
+            $table->string('id_wilayah')->primary(); // ID sebagai Primary Key
+            $table->string('nama_wilayah'); // Nama wilayah
+            $table->text('deskripsi')->nullable(); // Deskripsi opsional
             $table->timestamps();
         });
     }
+    
+    
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('produks');
+        Schema::dropIfExists('wilayahs');
     }
 };

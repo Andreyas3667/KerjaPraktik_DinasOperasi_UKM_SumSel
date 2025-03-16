@@ -1,16 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Umkm;
+use App\Http\Controllers\UMKMController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\TransaksiController;
 
-Route::post('/produk', [ProdukController::class, 'store']);
-Route::get('/umkm/{id}', [ProdukController::class, 'show']);
-Route::get('/produk/{id}/edit', [ProdukController::class, 'edit']);
-Route::put('/produk/{id}', [ProdukController::class, 'update']);
-Route::delete('/produk/{id}', [ProdukController::class, 'destroy']);
+Route::get('/umkm', [UMKMController::class, 'index']);
+Route::get('/umkm/{id}', [UMKMController::class, 'show']);
+Route::post('/umkm', [UMKMController::class, 'store']);
+
 
 Route::get('/', function () {
-    $umkms = Umkm::all();
-    return view('welcome', compact('umkms'));
+    return view('welcome');
 });
