@@ -9,23 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('wilayah', function (Blueprint $table) {
-            $table->string('id_wilayah')->primary(); // ID sebagai Primary Key
-            $table->string('nama_wilayah'); // Nama wilayah
-            $table->text('deskripsi')->nullable(); // Deskripsi opsional
+            $table->string('id_wilayah')->primary();
+            $table->string('nama_wilayah');
+            $table->text('deskripsi')->nullable();
             $table->timestamps();
         });
     }
-    
-    
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('wilayahs');
+        Schema::dropIfExists('wilayah');
     }
 };

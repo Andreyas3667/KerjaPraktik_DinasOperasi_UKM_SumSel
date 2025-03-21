@@ -2,16 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UMKMController;
-use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\TransaksiController;
 
+Route::get('/',[UMKMController::class, 'showMap']);
 
-Route::get('/umkm', [UMKMController::class, 'index']);
-Route::get('/umkm/{id}', [UMKMController::class, 'show']);
-Route::post('/umkm', [UMKMController::class, 'store']);
-Route::get('/maps', [UMKMController::class, 'index']);
-
-
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/transaksi/{id}', [TransaksiController::class, 'show']);

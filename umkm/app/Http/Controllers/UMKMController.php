@@ -1,18 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\UMKM;
 use Illuminate\Http\Request;
+use App\Models\UMKM;
 
 class UMKMController extends Controller
 {
-    public function index()
-{
-    $umkm = UMKM::select('nama_usaha', 'alamat', 'latitude', 'longitude')->get();
-    return view('maps', compact('umkm'));
-}
-
-
-
+    public function showMap()
+    {
+        $umkms = UMKM::all();
+        return view('maps', compact('umkms'));
+    }
 }
