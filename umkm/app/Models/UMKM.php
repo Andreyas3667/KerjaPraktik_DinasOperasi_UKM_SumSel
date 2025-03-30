@@ -4,26 +4,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-
-class umkm extends Model
+class UMKM extends Model
 {
     use HasFactory;
 
-    protected $table = 'umkm'; // Sesuaikan dengan nama tabel di database
+    protected $table = 'umkm';
+    protected $primaryKey = 'id_umkm'; // Jika primary key bukan 'id', sesuaikan
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
-        'name',
-        'description',
-        'location',
-        'land_size',
-        'products',
-        'whatsapp',
-        'user_id' // Relasi ke tabel users
+        'id_umkm', 'nama_usaha', 'deskripsi', 'alamat',
+        'kontak', 'longitude', 'latitude', 'id_wilayah', 'id_user'
     ];
-
-    // Relasi ke user (pemilik UMKM)
-    public function user()
-    {
-        return $this->belongsTo(\App\Models\User::class);
-    }
 }
