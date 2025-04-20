@@ -8,7 +8,25 @@
     <div class="container">
         <h1>Selamat Datang di UMKM Kopi</h1>
         <h2>Platform yang menghubungkan UMKM Kopi di Sumatera Selatan</h2>
-        <a href="{{ url('/maps') }}" class="btn-get-started scrollto">Lihat Peta UMKM</a>
+        {{-- <a href="{{ url('/maps') }}" class="btn-get-started scrollto">Lihat Peta UMKM</a> --}}
+            <div id="map" style="width: 100%; height: 500px;"></div>
+        <!-- Leaflet.js -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script>
+            var map = L.map('map').setView([-3.319437, 103.914399], 7);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+            fetch('/api/umkm')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(umkm => {
+                        var marker = L.marker([umkm.latitude, umkm.longitude]).addTo(map)
+                            .bindPopup("<b>" + umkm.nama_usaha + "</b><br><a href='/umkm/" + umkm.id_umkm + "'>Lihat Detail</a>");
+                    });
+                });
+        </script>
+
     </div>
 </section>
 
@@ -20,14 +38,14 @@
                 <img src="{{ asset('template/assets/img/about.jpg') }}" class="img-fluid" alt="">
             </div>
             <div class="col-lg-6 pt-4 pt-lg-0 order-2 order-lg-1">
-                <h3>Tentang Kami</h3>
+                {{-- <h3>Tentang Kami</h3>
                 <p>
                     UMKM Kopi adalah platform yang membantu petani dan pelaku usaha kopi di Sumatera Selatan untuk terhubung dengan pasar yang lebih luas.
                 </p>
                 <ul>
                     <li><i class="bi bi-check-circle"></i> Peta interaktif untuk menemukan UMKM.</li>
                     <li><i class="bi bi-check-circle"></i> Informasi lengkap tentang setiap UMKM.</li>
-                    <li><i class="bi bi-check-circle"></i> Dukungan penjualan melalui WhatsApp.</li>
+                    <li><i class="bi bi-check-circle"></i> Dukungan penjualan melalui WhatsApp.</li> --}}
                 </ul>
             </div>
         </div>

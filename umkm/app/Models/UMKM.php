@@ -9,12 +9,30 @@ class UMKM extends Model
     use HasFactory;
 
     protected $table = 'umkm';
-    protected $primaryKey = 'id_umkm'; // Jika primary key bukan 'id', sesuaikan
+    protected $primaryKey = 'id_umkm';
     public $incrementing = false;
-    protected $keyType = 'string';
-
     protected $fillable = [
-        'id_umkm', 'nama_usaha', 'deskripsi', 'alamat',
-        'kontak', 'longitude', 'latitude', 'id_wilayah', 'id_user'
+        'nama_usaha', 'deskripsi', 'alamat', 'kontak',
+        'longitude', 'latitude', 'id_wilayah', 'id_user'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
+
+    public function wilayah()
+    {
+        return $this->belongsTo(Wilayah::class, 'id_wilayah');
+    }
+
+    public function produk()
+    {
+        return $this->hasMany(Produk::class, 'id_umkm');
+    }
+
+    public function transaksi()
+    {
+        return $this->hasMany(Transaksi::class, 'id_umkm');
+    }
 }
