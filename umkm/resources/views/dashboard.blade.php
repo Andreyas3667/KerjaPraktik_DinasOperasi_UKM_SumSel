@@ -8,10 +8,10 @@
     <div class="container">
         <h1>Selamat Datang di UMKM Kopi</h1>
         <h2>Platform yang menghubungkan UMKM Kopi di Sumatera Selatan</h2>
-        {{-- <a href="{{ url('/maps') }}" class="btn-get-started scrollto">Lihat Peta UMKM</a> --}}
-            <div id="map" style="width: 100%; height: 500px;"></div>
+        <div id="map" style="width: 100%; height: 500px;"></div>
         <!-- Leaflet.js -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <link rel="stylesheet" href="{{ asset('css/main.css') }}">
         <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
         <script>
             var map = L.map('map').setView([-3.319437, 103.914399], 7);
@@ -26,7 +26,6 @@
                     });
                 });
         </script>
-
     </div>
 </section>
 
@@ -38,16 +37,38 @@
                 <img src="{{ asset('template/assets/img/about.jpg') }}" class="img-fluid" alt="">
             </div>
             <div class="col-lg-6 pt-4 pt-lg-0 order-2 order-lg-1">
-                {{-- <h3>Tentang Kami</h3>
+                <h3>Tentang Kami</h3>
                 <p>
                     UMKM Kopi adalah platform yang membantu petani dan pelaku usaha kopi di Sumatera Selatan untuk terhubung dengan pasar yang lebih luas.
                 </p>
                 <ul>
                     <li><i class="bi bi-check-circle"></i> Peta interaktif untuk menemukan UMKM.</li>
                     <li><i class="bi bi-check-circle"></i> Informasi lengkap tentang setiap UMKM.</li>
-                    <li><i class="bi bi-check-circle"></i> Dukungan penjualan melalui WhatsApp.</li> --}}
+                    <li><i class="bi bi-check-circle"></i> Dukungan penjualan melalui WhatsApp.</li>
                 </ul>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- ======= News Section ======= -->
+<section id="news" class="news">
+    <div class="container">
+        <div class="section-title">
+            <h2>Berita Terbaru</h2>
+            <p>Berita dan informasi terbaru seputar UMKM Kopi di Sumatera Selatan.</p>
+        </div>
+        <div class="row">
+            @foreach ($news as $item)
+                <div class="col-lg-4 col-md-6">
+                    <div class="news-item">
+                        <img src="{{ $item->image }}" class="img-fluid" alt="{{ $item->title }}">
+                        <h4><a href="{{ route('news.details', $item->id) }}">{{ $item->title }}</a></h4>
+                        <p>{{ Str::limit($item->content, 100) }}</p>
+                        <small>Published at: {{ $item->published_at }}</small>
+                    </div>
+                </div>
+            @endforeach
         </div>
     </div>
 </section>

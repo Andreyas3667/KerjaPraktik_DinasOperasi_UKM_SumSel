@@ -16,6 +16,10 @@
     <!-- Fonts -->
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+    <!-- News CSS -->
+      <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+
+
 </head>
 <body>
 
@@ -118,10 +122,10 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="{{ url('/') }}" class="active">Home</a></li>
-          <li><a href="{{ url('/maps') }}">Maps</a></li>
-          <li><a href="{{ url('/profile') }}">Profile</a></li>
+          <li><a class="nav-link scrollto" href="#footer">About</a></li>
+          <!-- <li><a href="{{ url('/profile') }}">Profile</a></li>
           <li><a href="{{ url('/news') }}">News</a></li>
-          <li><a href="{{ url('/contact') }}">Contact</a></li>
+          <li><a href="{{ url('/contact') }}">Contact</a></li> -->
           {{-- <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="#">Dropdown 1</a></li>
@@ -827,7 +831,7 @@
 
   <footer id="footer" class="footer">
 
-    <div class="footer-newsletter">
+    <!-- <div class="footer-newsletter">
       <div class="container">
         {{-- <div class="row justify-content-center text-center">
           <div class="col-lg-6">
@@ -840,7 +844,7 @@
               <div class="sent-message">Your subscription request has been sent. Thank you!</div>
             </form>
           </div>
-        </div> --}}
+        </div> --}} -->
 
 
     <div class="container footer-top">
@@ -891,7 +895,7 @@
 
 
         <div class="col-lg-4 col-md-18">
-            <h3>Tentang Kami</h3>
+        <a href="https://diskopukm.sumselprov.go.id/"><span class="sitename"><h3>Tentang Kami</h3> </span></a>
             <p>
                 UMKM Kopi adalah platform yang membantu petani dan pelaku usaha kopi di Sumatera Selatan untuk terhubung dengan pasar yang lebih luas.
             </p>
