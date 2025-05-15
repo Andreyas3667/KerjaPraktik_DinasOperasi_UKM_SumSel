@@ -2,25 +2,29 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class User extends Model
+class User extends Authenticatable
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
-    protected $table = 'users';
-    protected $primaryKey = 'id_users';
-    public $incrementing = false;
-    protected $fillable = ['nama', 'email', 'password', 'role'];
+    protected $table = 'users'; // Nama tabel di database
+    protected $primaryKey = 'id_users'; // Gunakan kolom 'id_users' sebagai primary key
+    public $incrementing = false; // Jika kolomnya string
+    protected $keyType = 'string'; // Sesuaikan dengan tipe kolom 'id_users'
 
-    public function umkm()
-    {
-        return $this->hasMany(UMKM::class, 'id_user');
-    }
+    protected $fillable = [
+        'id_users',
+        'nama',
+        'email',
+        'password',
+        'role',
+    ];
 
-    public function transaksi()
-    {
-        return $this->hasMany(Transaksi::class, 'id_user');
-    }
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,13 +13,14 @@ class UMKM extends Model
     protected $primaryKey = 'id_umkm';
     public $incrementing = false;
     protected $fillable = [
+        'id_umkm', // tambahkan ini jika id_umkm UUID/string
         'nama_usaha', 'deskripsi', 'alamat', 'kontak',
         'longitude', 'latitude', 'id_wilayah', 'id_user'
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'id_user', 'id_users');
     }
 
     public function wilayah()
