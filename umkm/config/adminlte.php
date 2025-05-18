@@ -309,11 +309,10 @@ return [
             'url' => 'admin/dashboard',
             'icon' => 'fas fa-fw fa-tachometer-alt',
         ],
-        ['header' => 'MANAGE UMKM'], // Header untuk memisahkan bagian
         [
-            'text' => 'Kelola UMKM',
+            'text' => 'UMKM', // Ubah dari 'Kelola UMKM'
             'url' => 'admin/umkm',
-            'icon' => 'fas fa-fw fa-cogs',
+            'icon' => 'fas fa-fw fa-store',
         ],
         ['header' => 'ACCOUNT SETTINGS'],
         [

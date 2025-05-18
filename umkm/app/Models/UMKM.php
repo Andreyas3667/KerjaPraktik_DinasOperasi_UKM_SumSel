@@ -30,7 +30,7 @@ class UMKM extends Model
 
     public function produk()
     {
-        return $this->hasMany(Produk::class, 'id_umkm');
+        return $this->hasMany(\App\Models\Produk::class, 'id_umkm');
     }
 
     public function transaksi()

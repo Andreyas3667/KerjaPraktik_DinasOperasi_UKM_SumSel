@@ -32,6 +32,8 @@ Route::prefix('admin')->group(function () {
     Route::delete('/umkm/{id}', [UMKMController::class, 'destroy'])->name('admin.umkm.destroy');
 });
 
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

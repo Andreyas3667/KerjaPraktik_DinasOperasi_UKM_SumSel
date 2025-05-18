@@ -31,15 +31,26 @@ class UMKMController extends Controller
      */
     public function manage(Request $request)
     {
-        $umkms = UMKM::with('wilayah')->get();
-        $wilayahs = \App\Models\Wilayah::all(); // Ambil semua wilayah
+        $query = UMKM::with('produk', 'wilayah', 'user');
 
-        $editUMKM = null;
-        if ($request->has('edit')) {
-            $editUMKM = UMKM::findOrFail($request->edit);
+        // Filter search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_usaha', 'like', "%$search%")
+                  ->orWhere('alamat', 'like', "%$search%")
+                  ->orWhere('kontak', 'like', "%$search%");
+            });
         }
 
-        return view('admin.umkm.manage', compact('umkms', 'editUMKM', 'wilayahs'));
+        // Filter wilayah
+        if ($request->filled('wilayah')) {
+            $query->where('id_wilayah', $request->wilayah);
+        }
+
+        $umkms = $query->get();
+
+        return view('admin.umkm.manage', compact('umkms'));
     }
 
     /**
