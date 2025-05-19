@@ -14,19 +14,20 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Grafik penjualan per bulan (misal tabel transaksi ada kolom 'total' dan 'tanggal_transaksi')
+        // Penjualan per bulan
         $penjualan = DB::table('transaksi')
             ->selectRaw('MONTH(tanggal_transaksi) as bulan, SUM(total) as total')
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->pluck('total', 'bulan');
 
-        // Grafik total UMKM per wilayah
-        $umkmWilayah = UMKM::selectRaw('id_wilayah, COUNT(*) as total')
+        // Total UMKM per wilayah
+        $umkmWilayah = DB::table('umkm')
+            ->selectRaw('id_wilayah, COUNT(*) as total')
             ->groupBy('id_wilayah')
             ->pluck('total', 'id_wilayah');
 
-        // Grafik produk paling laris (top 5)
+        // Produk paling laris
         $produkLaris = DB::table('detail_transaksi')
             ->join('produk', 'detail_transaksi.id_produk', '=', 'produk.id_produk')
             ->select('produk.nama_produk', DB::raw('SUM(detail_transaksi.jumlah) as total'))
