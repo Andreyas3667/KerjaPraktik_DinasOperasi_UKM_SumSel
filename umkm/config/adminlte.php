@@ -314,6 +314,16 @@ return [
             'url' => 'admin/umkm',
             'icon' => 'fas fa-fw fa-store',
         ],
+        [
+            'text' => 'Penjualan',
+            'url' => 'admin/penjualan', // Ganti dari submenu menjadi satu url
+            'icon' => 'fas fa-fw fa-chart-line',
+        ],
+        [
+            'text' => 'Tambah Admin',
+            'icon' => 'fas fa-fw fa-users-cog',
+            'url'  => 'admin/admin-wilayah',
+        ],
         ['header' => 'ACCOUNT SETTINGS'],
         [
             'text' => 'Profile',

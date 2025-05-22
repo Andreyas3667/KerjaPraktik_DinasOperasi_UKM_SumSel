@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('role')->default('user'); // Bisa admin atau UMKM
+            $table->unsignedBigInteger('id_wilayah')->nullable()->after('role');
+            $table->foreign('id_wilayah')->references('id_wilayah')->on('wilayah');
             $table->timestamps();
         });
     }

@@ -21,10 +21,16 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'id_wilayah',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    public function wilayah()
+    {
+        return $this->belongsTo(\App\Models\Wilayah::class, 'id_wilayah');
+    }
 }
