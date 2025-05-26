@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\UMKM;
+
 use Illuminate\Http\Request;
+use App\Models\UMKM;
 
 class MapsController extends Controller
 {
@@ -11,8 +12,9 @@ class MapsController extends Controller
         return view('maps');
     }
 
-    public function getUMKM()
+    public function getUmkm()
     {
-        return response()->json(UMKM::select('id_umkm', 'nama_usaha', 'alamat', 'latitude', 'longitude')->get());
+        $umkms = UMKM::select('nama_usaha', 'alamat', 'latitude', 'longitude')->get();
+        return response()->json($umkms);
     }
 }

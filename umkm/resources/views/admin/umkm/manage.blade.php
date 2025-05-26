@@ -7,7 +7,7 @@
     <div class="col-md-8">
         {{-- Search Bar --}}
         <form method="GET" action="{{ route('admin.umkm.manage') }}" class="input-group mb-2">
-            <input type="text" name="search" class="form-control" placeholder="Cari nama UMKM, alamat, kontak, atau wilayah..." value="{{ request('search') }}">
+            <input type="text" id="searchUmkm" name="search" class="form-control" placeholder="Cari nama UMKM, alamat, kontak, atau wilayah..." autocomplete="off">
             <div class="input-group-append">
                 <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i> Cari</button>
             </div>
@@ -35,6 +35,7 @@
                 <option value="3" {{ request('wilayah') == 3 ? 'selected' : '' }}>Muara Enim</option>
                 <option value="4" {{ request('wilayah') == 4 ? 'selected' : '' }}>OKU Selatan</option>
                 <option value="5" {{ request('wilayah') == 5 ? 'selected' : '' }}>Empat Lawang</option>
+                <option value="6" {{ request('wilayah') == 6 ? 'selected' : '' }}>Palembang</option>
             </select>
         </form>
         {{-- Tombol Daftar --}}
@@ -59,30 +60,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($umkms as $umkm)
-                    <tr data-id="{{ $umkm->id_umkm }}" data-nama="{{ $umkm->nama_usaha }}" data-alamat="{{ $umkm->alamat }}" data-kontak="{{ $umkm->kontak }}" data-wilayah="{{ $umkm->id_wilayah }}">
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $umkm->nama_usaha }}</td>
-                        <td>{{ $umkm->alamat }}</td>
-                        <td>{{ $umkm->kontak }}</td>
-                        <td>{{ $umkm->wilayah->nama_wilayah ?? '-' }}</td>
-                        <td>
-                            @if($umkm->produk && $umkm->produk->count())
-                                <ul class="mb-0 pl-3">
-                                    @foreach($umkm->produk as $produk)
-                                        <li>{{ $produk->nama_produk }}</li>
-                                    @endforeach
-                                </ul>
-                            @else
-                                <span class="text-muted">Belum ada produk</span>
-                            @endif
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="text-center">Tidak ada data UMKM</td>
-                    </tr>
-                @endforelse
+                @include('admin.umkm.partials.table', ['umkms' => $umkms])
             </tbody>
         </table>
     </div>
@@ -91,9 +69,9 @@
 {{-- Modal Tambah/Edit UMKM --}}
 <div class="modal fade" id="modalTambahUMKM" tabindex="-1" role="dialog" aria-labelledby="modalTambahUMKMLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <form id="formUmkm" action="{{ route('admin.umkm.store') }}" method="POST">
-            @csrf
-            <div class="modal-content">
+        <div class="modal-content">
+            <form id="formUmkm" action="{{ route('admin.umkm.store') }}" method="POST">
+                @csrf
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="modalTambahUMKMLabel">Tambah UMKM</h5>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
@@ -123,16 +101,42 @@
                             <option value="3">Muara Enim</option>
                             <option value="4">OKU Selatan</option>
                             <option value="5">Empat Lawang</option>
+                            <option value="6">Palembang</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="longitude">Longitude</label>
+                        <input type="text" name="longitude" id="longitude" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="latitude">Latitude</label>
+                        <input type="text" name="latitude" id="latitude" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
+</div>
+
+{{-- Modal Show Produk --}}
+<div class="modal fade" id="modalShowProduk" tabindex="-1" role="dialog" aria-labelledby="modalShowProdukLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalShowProdukLabel">Daftar Produk</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul id="listProduk"></ul>
+      </div>
+    </div>
+  </div>
 </div>
 @endsection
 
@@ -225,6 +229,32 @@
             $('body').append(form);
             form.submit();
         }
+    });
+
+    $(document).on('click', '.show-produk-btn', function() {
+        let produk = $(this).data('produk');
+        let list = '';
+        if (produk.length) {
+            produk.forEach(function(nama) {
+                list += '<li>' + nama + '</li>';
+            });
+        } else {
+            list = '<li>Tidak ada produk</li>';
+        }
+        $('#listProduk').html(list);
+        $('#modalShowProduk').modal('show');
+    });
+
+    $('#searchUmkm').on('keyup', function() {
+        let query = $(this).val();
+        $.ajax({
+            url: '{{ route("admin.umkm.search") }}',
+            type: 'GET',
+            data: { search: query },
+            success: function(data) {
+                $('#umkmTable tbody').html(data);
+            }
+        });
     });
 </script>
 @endpush

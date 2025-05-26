@@ -6,22 +6,10 @@ use App\Http\Controllers\AdminController; // Import AdminController
 use App\Http\Controllers\DashboardController; // Import DashboardController
 use App\Http\Controllers\UMKMController; // Import UMKMController
 use App\Http\Controllers\PenjualanController; // Import PenjualanController
+use App\Http\Controllers\MapsController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-// Route::get('/maps', function () { return view('maps'); });
-
-// Route::get('/profile', function () { return view('profile'); });
-
-// Route::get('/news', [NewsController::class, 'index'])->name('news.index');
-
-// Route::get('/news/{id}', function ($id) {
-//     return view('news-detail', ['id' => $id]);
-// });
-
-Route::get('/news/{id}', [NewsController::class, 'details'])->name('news.details');
-
-// Route::get('/contact', function () { return view('contact'); });
 
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -31,6 +19,8 @@ Route::prefix('admin')->group(function () {
     Route::post('/umkm', [UMKMController::class, 'store'])->name('admin.umkm.store');
     Route::put('/umkm/{id}', [UMKMController::class, 'update'])->name('admin.umkm.update');
     Route::delete('/umkm/{id}', [UMKMController::class, 'destroy'])->name('admin.umkm.destroy');
+    Route::get('/umkm/{id}', [UMKMController::class, 'show'])->name('admin.umkm.show');
+    Route::get('/umkm/search', [UMKMController::class, 'ajaxSearch'])->name('admin.umkm.search');
     Route::resource('admin-wilayah', \App\Http\Controllers\AdminWilayahController::class);
 });
 
@@ -55,3 +45,15 @@ Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('adm
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('/admin/umkm/manage', [UMKMController::class, 'index'])->name('admin.umkm.manage');
+Route::post('/admin/umkm', [UMKMController::class, 'store'])->name('admin.umkm.store');
+Route::put('/admin/umkm/{id}', [UMKMController::class, 'update'])->name('admin.umkm.update');
+Route::delete('/admin/umkm/{id}', [UMKMController::class, 'destroy'])->name('admin.umkm.destroy');
+Route::get('/admin/umkm/search', [UMKMController::class, 'ajaxSearch'])->name('admin.umkm.search');
+
+Route::get('/maps', [MapsController::class, 'index'])->name('maps.index');
+Route::get('/api/umkm', [MapsController::class, 'getUmkm'])->name('api.umkm');

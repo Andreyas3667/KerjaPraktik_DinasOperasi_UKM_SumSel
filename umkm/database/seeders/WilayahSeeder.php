@@ -15,6 +15,7 @@ class WilayahSeeder extends Seeder
             ['id_wilayah' => 3, 'nama_wilayah' => 'Muara Enim'],
             ['id_wilayah' => 4, 'nama_wilayah' => 'OKU Selatan'],
             ['id_wilayah' => 5, 'nama_wilayah' => 'Empat Lawang'],
+            ['id_wilayah' => 6, 'nama_wilayah' => 'Palembang'],
         ]);
     }
 }

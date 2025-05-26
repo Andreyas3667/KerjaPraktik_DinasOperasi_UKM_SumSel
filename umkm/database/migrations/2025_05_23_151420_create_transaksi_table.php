@@ -12,16 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transaksi', function (Blueprint $table) {
-            $table->id('id_transaksi');
-            $table->string('id_user');
-            $table->string('id_umkm');
+            $table->bigIncrements('id_transaksi');
+            $table->unsignedBigInteger('id_user');
+            $table->unsignedBigInteger('id_umkm');
             $table->string('status_pembayaran')->default('pending'); // pending, selesai, dibatalkan
             $table->integer('total');
             $table->date('tanggal_transaksi');
             $table->timestamps();
 
-            $table->foreign('id_user')->references('id_users')->on('users')->onDelete('cascade');
-            $table->foreign('id_umkm')->references('id_umkm')->on('umkm')->onDelete('cascade');
+            $table->foreign('id_user')->references('id_users')->on('users')->onDelete('restrict');
+            $table->foreign('id_umkm')->references('id_umkm')->on('umkm')->onDelete('restrict');
         });
     }
 

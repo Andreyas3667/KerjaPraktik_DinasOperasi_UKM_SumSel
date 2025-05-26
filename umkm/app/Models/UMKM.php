@@ -12,10 +12,18 @@ class UMKM extends Model
     protected $table = 'umkm';
     protected $primaryKey = 'id_umkm';
     public $incrementing = false;
+    protected $keyType = 'int';
+
     protected $fillable = [
-        'id_umkm', // tambahkan ini jika id_umkm UUID/string
-        'nama_usaha', 'deskripsi', 'alamat', 'kontak',
-        'longitude', 'latitude', 'id_wilayah', 'id_user'
+        'id_umkm',
+        'nama_usaha',
+        'alamat',
+        'kontak',
+        'id_wilayah',
+        'id_user',
+        'longitude',
+        'latitude',
+        // tambahkan field lain jika ada
     ];
 
     public function user()

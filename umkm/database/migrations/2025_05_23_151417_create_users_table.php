@@ -12,12 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->string('id_users')->primary();
+            $table->bigIncrements('id_users')->primary();
             $table->string('nama');
             $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->rememberToken();
             $table->string('role')->default('user'); // Bisa admin atau UMKM
-            $table->unsignedBigInteger('id_wilayah')->nullable()->after('role');
+            $table->unsignedBigInteger('id_wilayah')->nullable();
             $table->foreign('id_wilayah')->references('id_wilayah')->on('wilayah');
             $table->timestamps();
         });

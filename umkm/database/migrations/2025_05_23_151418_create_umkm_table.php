@@ -12,19 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('umkm', function (Blueprint $table) {
-            $table->string('id_umkm')->primary();
+            $table->bigIncrements('id_umkm')->primary();
             $table->string('nama_usaha');
             $table->text('deskripsi')->nullable();
             $table->string('alamat');
             $table->string('kontak');
             $table->decimal('longitude', 10, 7)->nullable();
             $table->decimal('latitude', 10, 7)->nullable();
-            $table->string('id_wilayah');
-            $table->string('id_user');
+            $table->unsignedBigInteger('id_wilayah');
+            $table->unsignedBigInteger('id_user');
+            $table->foreign('id_wilayah')->references('id_wilayah')->on('wilayah')->onDelete('restrict');
+            $table->foreign('id_user')->references('id_users')->on('users')->onDelete('restrict');
             $table->timestamps();
-
-            $table->foreign('id_wilayah')->references('id_wilayah')->on('wilayah')->onDelete('cascade');
-            $table->foreign('id_user')->references('id_users')->on('users')->onDelete('cascade');
         });
     }
 

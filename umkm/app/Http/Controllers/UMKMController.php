@@ -59,21 +59,14 @@ class UMKMController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_usaha' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
+            'nama_usaha' => 'required|big|max:255',
             'alamat' => 'required|string',
             'kontak' => 'required|string',
-            'longitude' => 'nullable|numeric',
-            'latitude' => 'nullable|numeric',
+            'longitude' => 'required|numeric',
+            'latitude' => 'required|numeric',
             'id_wilayah' => 'required|exists:wilayah,id_wilayah',
             'id_user' => 'required|exists:users,id_users',
         ]);
-
-        // Jika id_umkm UUID/string
-        $validated['id_umkm'] = (string) Str::uuid();
-
-        // Debugging: Log data yang divalidasi
-        Log::info('Data UMKM yang divalidasi:', $validated);
 
         UMKM::create($validated);
         return redirect()->route('admin.umkm.manage')->with('success', 'UMKM berhasil ditambahkan.');
@@ -126,4 +119,18 @@ class UMKMController extends Controller
         return view('umkm.index', compact('umkms'));
     }
 
+    public function ajaxSearch(Request $request)
+    {
+        $query = UMKM::with('produk', 'wilayah', 'user');
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_usaha', 'like', "%$search%")
+                  ->orWhere('alamat', 'like', "%$search%")
+                  ->orWhere('kontak', 'like', "%$search%");
+            });
+        }
+        $umkms = $query->get();
+        return view('admin.umkm.partials.table', compact('umkms'))->render();
+    }
 }
