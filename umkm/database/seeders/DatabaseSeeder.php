@@ -18,8 +18,8 @@ class DatabaseSeeder extends Seeder
         DB::table('users')->delete();
         DB::statement('ALTER TABLE users AUTO_INCREMENT = 1');
 
-        // Membuat 10 user random
-        User::factory(10)->create();
+        // // Membuat 10 user random
+        // User::factory(10)->create();
 
         // Membuat user admin
         User::factory()->create([
@@ -28,5 +28,8 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
             'role' => 'admin',
         ]);
+
+        
+
     }
 }

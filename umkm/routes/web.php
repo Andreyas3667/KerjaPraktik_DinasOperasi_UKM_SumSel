@@ -15,7 +15,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/users', [AdminController::class, 'manageUsers'])->name('admin.users');
     Route::get('/news', [AdminController::class, 'manageNews'])->name('admin.news');
-    Route::get('/umkm', [UMKMController::class, 'manage'])->name('admin.umkm.manage');
+    Route::get('/umkm', [UMKMController::class, 'manage'])->name('admin.umkm.index');
     Route::post('/umkm', [UMKMController::class, 'store'])->name('admin.umkm.store');
     Route::put('/umkm/{id}', [UMKMController::class, 'update'])->name('admin.umkm.update');
     Route::delete('/umkm/{id}', [UMKMController::class, 'destroy'])->name('admin.umkm.destroy');
@@ -29,6 +29,11 @@ Route::prefix('admin/penjualan')->group(function() {
     Route::get('laporan', [\App\Http\Controllers\PenjualanController::class, 'laporan'])->name('penjualan.laporan');
     Route::get('/', [PenjualanController::class, 'index'])->name('penjualan.index');
     Route::get('export', [PenjualanController::class, 'exportPdf'])->name('penjualan.export');
+    Route::post('/admin/penjualan/verifikasi/{id}', [PenjualanController::class, 'verifikasi'])->name('penjualan.verifikasi');
+    Route::delete('admin/penjualan/{id}', [PenjualanController::class, 'destroy'])->name('penjualan.destroy');
+    Route::get('/{id}', [PenjualanController::class, 'show'])->name('penjualan.show');
+    Route::get('/{id}/edit', [PenjualanController::class, 'edit'])->name('penjualan.edit');
+    Route::put('/{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
 });
 
 Route::prefix('umkm')->group(function () {

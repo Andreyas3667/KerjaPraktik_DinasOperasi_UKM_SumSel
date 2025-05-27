@@ -17,6 +17,6 @@ class DetailTransaksi extends Model
 
     public function produk()
     {
-        return $this->belongsTo(Produk::class, 'id_produk');
+        return $this->belongsTo(\App\Models\Produk::class, 'id_produk');
     }
 }

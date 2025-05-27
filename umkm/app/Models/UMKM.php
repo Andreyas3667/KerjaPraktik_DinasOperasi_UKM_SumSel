@@ -15,7 +15,6 @@ class UMKM extends Model
     protected $keyType = 'int';
 
     protected $fillable = [
-        'id_umkm',
         'nama_usaha',
         'alamat',
         'kontak',

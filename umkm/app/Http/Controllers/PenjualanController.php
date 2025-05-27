@@ -32,6 +32,7 @@ class PenjualanController extends Controller
     {
         $wilayahs = Wilayah::all();
         $wilayah = $request->wilayah;
+        $tanggal = $request->tanggal;
 
         $query = Transaksi::with(['umkm.wilayah', 'detail.produk']);
         if ($wilayah) {
@@ -39,9 +40,12 @@ class PenjualanController extends Controller
                 $q->where('id_wilayah', $wilayah);
             });
         }
+        if ($tanggal) {
+            $query->whereDate('tanggal_transaksi', $tanggal);
+        }
         $transaksis = $query->latest()->get();
 
-        return view('admin.penjualan.index', compact('transaksis', 'wilayahs', 'wilayah'));
+        return view('admin.penjualan.index', compact('transaksis', 'wilayahs', 'wilayah', 'tanggal'));
     }
 
     public function exportPdf(Request $request)
@@ -57,5 +61,18 @@ class PenjualanController extends Controller
 
         $pdf = PDF::loadView('admin.penjualan.pdf', compact('transaksis', 'wilayah'));
         return $pdf->download('laporan-penjualan.pdf');
+    }
+    public function verifikasi(Request $request, $id)
+    {
+        $trx = Transaksi::findOrFail($id);
+        $trx->status_pembayaran = $request->status;
+        $trx->save();
+        return back()->with('success', 'Status pembayaran diperbarui.');
+    }
+    public function destroy($id)
+    {
+        $trx = Transaksi::findOrFail($id);
+        $trx->delete();
+        return redirect()->route('penjualan.index')->with('success', 'Data penjualan berhasil dihapus.');
     }
 }

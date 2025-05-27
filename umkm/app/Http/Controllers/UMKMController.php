@@ -59,7 +59,7 @@ class UMKMController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_usaha' => 'required|big|max:255',
+            'nama_usaha' => 'required|string|max:255',
             'alamat' => 'required|string',
             'kontak' => 'required|string',
             'longitude' => 'required|numeric',
@@ -69,7 +69,7 @@ class UMKMController extends Controller
         ]);
 
         UMKM::create($validated);
-        return redirect()->route('admin.umkm.manage')->with('success', 'UMKM berhasil ditambahkan.');
+        return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -96,7 +96,7 @@ class UMKMController extends Controller
 
         $umkm = UMKM::findOrFail($id);
         $umkm->update($validated);
-        return redirect()->route('admin.umkm.manage')->with('success', 'UMKM berhasil diperbarui.');
+        return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil diperbarui.');
     }
 
     /**
@@ -106,7 +106,7 @@ class UMKMController extends Controller
     {
         $umkm = UMKM::findOrFail($id);
         $umkm->delete();
-        return redirect()->route('admin.umkm.manage')->with('success', 'UMKM berhasil dihapus.');
+        return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil dihapus.');
     }
 
     public function search(Request $request)

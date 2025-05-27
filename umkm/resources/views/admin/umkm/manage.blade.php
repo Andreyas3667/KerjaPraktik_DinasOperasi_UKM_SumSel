@@ -12,7 +12,7 @@
                 <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i> Cari</button>
             </div>
         </form>
-        {{-- Tombol Edit Dropdown --}}
+        <!-- {{-- Tombol Edit Dropdown --}} -->
         <div id="editDropdownWrapper" class="mt-2 d-none">
             <div class="btn-group">
                 <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="editDropdownBtn">
@@ -85,12 +85,24 @@
                         <input type="text" name="nama_usaha" id="nama_usaha" class="form-control" required>
                     </div>
                     <div class="form-group">
+                        <label for="deskripsi">Deskripsi</label>
+                        <textarea name="deskripsi" id="deskripsi" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
                         <label for="alamat">Alamat</label>
                         <input type="text" name="alamat" id="alamat" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="kontak">Kontak</label>
-                        <input type="text" name="kontak" id="kontak" class="form-control" required>
+                        <input type="text" name="kontak" id="kontak" class="form-control" required pattern="[0-9]+">
+                    </div>
+                    <div class="form-group">
+                        <label for="longitude">Longitude</label>
+                        <input type="text" name="longitude" id="longitude" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="latitude">Latitude</label>
+                        <input type="text" name="latitude" id="latitude" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="id_wilayah">Wilayah</label>
@@ -103,14 +115,6 @@
                             <option value="5">Empat Lawang</option>
                             <option value="6">Palembang</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="longitude">Longitude</label>
-                        <input type="text" name="longitude" id="longitude" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="latitude">Latitude</label>
-                        <input type="text" name="latitude" id="latitude" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -138,6 +142,16 @@
     </div>
   </div>
 </div>
+
+@if($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 @endsection
 
 @push('js')
@@ -192,7 +206,8 @@
 
             // Isi form modal
             $('#modalTambahUMKMLabel').text('Edit UMKM');
-            $('#formUmkm').attr('action', '/admin/umkm/' + selectedUmkmId);
+            // Edit action
+            $('#formUmkm').attr('action', '{{ url("admin/umkm") }}/' + selectedUmkmId);
             if (!$('#formUmkm input[name="_method"]').length) {
                 $('#formUmkm').append('<input type="hidden" name="_method" value="PUT" id="methodEdit">');
             }
@@ -200,6 +215,9 @@
             $('#alamat').val(alamat);
             $('#kontak').val(kontak);
             $('#id_wilayah').val(wilayah).trigger('change');
+            $('#deskripsi').val(row.data('deskripsi'));
+            $('#longitude').val(row.data('longitude'));
+            $('#latitude').val(row.data('latitude'));
 
             // Tampilkan modal
             $('#modalTambahUMKM').modal('show');
@@ -222,7 +240,7 @@
             // Buat form hapus dinamis
             let form = $('<form>', {
                 'method': 'POST',
-                'action': '/admin/umkm/' + selectedUmkmId
+                'action': '{{ url("admin/umkm") }}/' + selectedUmkmId
             });
             form.append('@csrf');
             form.append('<input type="hidden" name="_method" value="DELETE">');
@@ -255,6 +273,10 @@
                 $('#umkmTable tbody').html(data);
             }
         });
+    });
+
+    $('#kontak').on('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
     });
 </script>
 @endpush

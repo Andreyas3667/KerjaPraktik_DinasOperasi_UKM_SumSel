@@ -19,11 +19,11 @@ class Transaksi extends Model
 
     public function umkm()
     {
-        return $this->belongsTo(UMKM::class, 'id_umkm');
+        return $this->belongsTo(\App\Models\UMKM::class, 'id_umkm');
     }
 
     public function detail()
     {
-        return $this->hasMany(DetailTransaksi::class, 'id_transaksi');
+        return $this->hasMany(\App\Models\DetailTransaksi::class, 'id_transaksi');
     }
 }
