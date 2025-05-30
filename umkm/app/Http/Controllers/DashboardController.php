@@ -38,4 +38,9 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', compact('penjualan', 'umkmWilayah', 'produkLaris'));
     }
+    public function dashboard()
+    {
+        // Anda bisa menyesuaikan data yang ingin dikirim ke view
+        return view('dashboard');
+    }
 }

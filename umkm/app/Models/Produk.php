@@ -8,17 +8,10 @@ class Produk extends Model
 {
     protected $table = 'produk';
     protected $primaryKey = 'id_produk';
-    protected $fillable = [
-        'id_umkm', 'nama_produk', 'deskripsi', 'harga', 'stok', 'gambar'
-    ];
+    protected $fillable = ['id_umkm', 'nama_produk', 'deskripsi', 'stok', 'harga', 'gambar'];
 
     public function umkm()
     {
-        return $this->belongsTo(UMKM::class, 'id_umkm');
-    }
-
-    public function detailTransaksi()
-    {
-        return $this->hasMany(DetailTransaksi::class, 'id_produk');
+        return $this->belongsTo(Umkm::class);
     }
 }

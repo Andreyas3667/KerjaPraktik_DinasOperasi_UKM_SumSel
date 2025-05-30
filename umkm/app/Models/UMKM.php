@@ -44,4 +44,9 @@ class UMKM extends Model
     {
         return $this->hasMany(Transaksi::class, 'id_umkm');
     }
+
+    public function produks()
+    {
+        return $this->hasMany(Produk::class);
+    }
 }

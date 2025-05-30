@@ -35,10 +35,15 @@
 @push('js')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Contoh grafik penjualan per bulan
-    const data = @json($transaksis->groupBy(function($item) {
-        return \Carbon\Carbon::parse($item->tanggal_transaksi)->format('Y-m');
-    })->map->count());
+    // Grafik penjualan per bulan
+    const data = @json(
+        (is_array($transaksis) ? collect($transaksis) : $transaksis)
+            ->filter(fn($item) => $item->tanggal_transaksi)
+            ->groupBy(function($item) {
+                return \Carbon\Carbon::parse($item->tanggal_transaksi)->format('Y-m');
+            })
+            ->map->count()
+    );
     const ctx = document.getElementById('grafikPenjualan').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
@@ -53,3 +58,22 @@
     });
 </script>
 @endpush
+
+@php
+    // Pastikan $transaksis adalah Collection
+    if (is_array($transaksis)) {
+        $transaksis = collect($transaksis);
+    }
+@endphp
+
+@foreach($transaksis->filter(fn($item) => $item->tanggal_transaksi)->groupBy(function($item) {
+    return \Carbon\Carbon::parse($item->tanggal_transaksi)->format('Y-m');
+}) as $bulan => $transaksiBulan)
+    {{-- Tampilkan data per bulan --}}
+    <h5>Bulan: {{ $bulan }}</h5>
+    <ul>
+        @foreach($transaksiBulan as $trx)
+            <li>{{ $trx->tanggal_transaksi }} - {{ $trx->user->name ?? '-' }}</li>
+        @endforeach
+    </ul>
+@endforeach

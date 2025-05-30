@@ -30,32 +30,47 @@ class PenjualanController extends Controller
 
     public function index(Request $request)
     {
-        $wilayahs = Wilayah::all();
+        $wilayahs = \App\Models\Wilayah::all();
         $wilayah = $request->wilayah;
-        $tanggal = $request->tanggal;
+        $tanggal_dari = $request->tanggal_dari;
+        $tanggal_sampai = $request->tanggal_sampai;
 
-        $query = Transaksi::with(['umkm.wilayah', 'detail.produk']);
+        $query = \App\Models\Transaksi::with(['umkm.wilayah', 'detail.produk']);
         if ($wilayah) {
             $query->whereHas('umkm', function($q) use ($wilayah) {
                 $q->where('id_wilayah', $wilayah);
             });
         }
-        if ($tanggal) {
-            $query->whereDate('tanggal_transaksi', $tanggal);
+        if ($tanggal_dari && $tanggal_sampai) {
+            $query->whereBetween('tanggal_transaksi', [$tanggal_dari, $tanggal_sampai]);
+        } elseif ($tanggal_dari) {
+            $query->whereDate('tanggal_transaksi', '>=', $tanggal_dari);
+        } elseif ($tanggal_sampai) {
+            $query->whereDate('tanggal_transaksi', '<=', $tanggal_sampai);
         }
         $transaksis = $query->latest()->get();
 
-        return view('admin.penjualan.index', compact('transaksis', 'wilayahs', 'wilayah', 'tanggal'));
+        return view('admin.penjualan.index', compact('transaksis', 'wilayahs', 'wilayah', 'tanggal_dari', 'tanggal_sampai'));
     }
 
     public function exportPdf(Request $request)
     {
         $wilayah = $request->wilayah;
-        $query = Transaksi::with(['umkm.wilayah', 'detail.produk']);
+        $tanggal_dari = $request->tanggal_dari;
+        $tanggal_sampai = $request->tanggal_sampai;
+
+        $query = \App\Models\Transaksi::with(['umkm.wilayah', 'detail.produk']);
         if ($wilayah) {
             $query->whereHas('umkm', function($q) use ($wilayah) {
                 $q->where('id_wilayah', $wilayah);
             });
+        }
+        if ($tanggal_dari && $tanggal_sampai) {
+            $query->whereBetween('tanggal_transaksi', [$tanggal_dari, $tanggal_sampai]);
+        } elseif ($tanggal_dari) {
+            $query->whereDate('tanggal_transaksi', '>=', $tanggal_dari);
+        } elseif ($tanggal_sampai) {
+            $query->whereDate('tanggal_transaksi', '<=', $tanggal_sampai);
         }
         $transaksis = $query->latest()->get();
 

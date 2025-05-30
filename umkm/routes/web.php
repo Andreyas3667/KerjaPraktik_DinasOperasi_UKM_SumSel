@@ -7,8 +7,9 @@ use App\Http\Controllers\DashboardController; // Import DashboardController
 use App\Http\Controllers\UMKMController; // Import UMKMController
 use App\Http\Controllers\PenjualanController; // Import PenjualanController
 use App\Http\Controllers\MapsController;
+use App\Http\Controllers\ProdukController;
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
 
 Route::prefix('admin')->group(function () {
@@ -39,18 +40,34 @@ Route::prefix('admin/penjualan')->group(function() {
 Route::prefix('umkm')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\UMKMUserController::class, 'dashboard'])->name('umkm.dashboard');
     Route::get('/produk', [\App\Http\Controllers\UMKMUserController::class, 'produk'])->name('umkm.produk');
+    Route::get('/produk/create', [ProdukController::class, 'create'])->name('umkm.produk.create');
+    Route::post('/produk', [ProdukController::class, 'store'])->name('umkm.produk.store');
+    Route::get('/produk/{id}/edit', [ProdukController::class, 'edit'])->name('umkm.produk.edit');
+    Route::put('/produk/{id}', [ProdukController::class, 'update'])->name('umkm.produk.update');
+    Route::delete('/produk/{id}', [ProdukController::class, 'destroy'])->name('umkm.produk.destroy');
     Route::get('/laporan', [\App\Http\Controllers\UMKMUserController::class, 'laporan'])->name('umkm.laporan');
     Route::get('/laporan/export', [\App\Http\Controllers\UMKMUserController::class, 'exportPdf'])->name('umkm.laporan.export');
     Route::get('/profile', [\App\Http\Controllers\UMKMUserController::class, 'profile'])->name('umkm.profile');
     Route::post('/profile/update', [\App\Http\Controllers\UMKMUserController::class, 'updateProfile'])->name('umkm.profile.update');
 });
 
+// Dashboard customer (landing page)
+Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
+
+// Peta UMKM
+Route::get('/maps', [MapsController::class, 'index'])->name('maps.index');
+
+// Profil user (jika ada fitur login customer)
+Route::get('/profile', function() {
+    return view('profile');
+})->name('profile');
+
+// Detail UMKM (dari peta/dashboard)
+Route::get('/umkm/{id}', [\App\Http\Controllers\UMKMController::class, 'show'])->name('umkm.detail');
+
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
+// Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -60,5 +77,4 @@ Route::put('/admin/umkm/{id}', [UMKMController::class, 'update'])->name('admin.u
 Route::delete('/admin/umkm/{id}', [UMKMController::class, 'destroy'])->name('admin.umkm.destroy');
 Route::get('/admin/umkm/search', [UMKMController::class, 'ajaxSearch'])->name('admin.umkm.search');
 
-Route::get('/maps', [MapsController::class, 'index'])->name('maps.index');
-Route::get('/api/umkm', [MapsController::class, 'getUmkm'])->name('api.umkm');
+

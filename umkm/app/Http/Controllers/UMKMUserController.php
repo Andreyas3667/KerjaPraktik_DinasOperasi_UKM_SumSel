@@ -18,8 +18,13 @@ class UMKMUserController extends Controller
 
     public function produk()
     {
-        $umkm = UMKM::where('id_user', auth()->id())->first();
-        $produks = $umkm ? $umkm->produk : [];
+        if (auth()->check()) {
+            $umkm = UMKM::where('id_user', auth()->id())->first();
+            $produks = $umkm ? $umkm->produk : [];
+        } else {
+            // Tampilkan semua produk (atau filter sesuai kebutuhan)
+            $produks = Produk::all();
+        }
         return view('umkm.produk', compact('produks'));
     }
 

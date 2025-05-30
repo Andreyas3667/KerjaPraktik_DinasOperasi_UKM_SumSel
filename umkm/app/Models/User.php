@@ -33,4 +33,8 @@ class User extends Authenticatable
     {
         return $this->belongsTo(\App\Models\Wilayah::class, 'id_wilayah');
     }
+    public function umkm()
+    {
+        return $this->hasOne(\App\Models\UMKM::class, 'user_id'); // sesuaikan foreign key jika perlu
+    }
 }

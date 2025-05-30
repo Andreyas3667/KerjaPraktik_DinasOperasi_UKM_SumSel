@@ -16,10 +16,12 @@
                 <option value="{{ $w->id_wilayah }}" {{ $wilayah == $w->id_wilayah ? 'selected' : '' }}>{{ $w->nama_wilayah }}</option>
             @endforeach
         </select>
-        <label for="tanggal" class="mr-2 ml-2">Tanggal:</label>
-        <input type="date" name="tanggal" id="tanggal" class="form-control mr-2" value="{{ request('tanggal') }}">
+        <label for="tanggal_dari" class="mr-2 ml-2">Dari:</label>
+        <input type="date" name="tanggal_dari" id="tanggal_dari" class="form-control mr-2" value="{{ request('tanggal_dari') }}">
+        <label for="tanggal_sampai" class="mr-2">Sampai:</label>
+        <input type="date" name="tanggal_sampai" id="tanggal_sampai" class="form-control mr-2" value="{{ request('tanggal_sampai') }}">
         <button type="submit" class="btn btn-primary">Filter</button>
-        <a href="{{ route('penjualan.export', ['wilayah' => $wilayah, 'tanggal' => request('tanggal')]) }}" class="btn btn-danger ml-2" target="_blank">
+        <a href="{{ route('penjualan.export', ['wilayah' => $wilayah, 'tanggal_dari' => request('tanggal_dari'), 'tanggal_sampai' => request('tanggal_sampai')]) }}" class="btn btn-danger ml-2" target="_blank">
             <i class="fas fa-file-pdf"></i> Export PDF
         </a>
     </form>

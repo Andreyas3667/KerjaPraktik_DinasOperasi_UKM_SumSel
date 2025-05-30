@@ -227,7 +227,7 @@
     // Reset modal saat ditutup
     $('#modalTambahUMKM').on('hidden.bs.modal', function () {
         $('#modalTambahUMKMLabel').text('Tambah UMKM');
-        $('#formUmkm').attr('action', '{{ route('admin.umkm.store') }}');
+        $('#formUmkm').attr('action', '{{ route("admin.umkm.store") }}');
         $('#methodEdit').remove();
         $('#formUmkm')[0].reset();
         $('#id_wilayah').val('').trigger('change');

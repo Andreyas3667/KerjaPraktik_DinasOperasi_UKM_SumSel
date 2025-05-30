@@ -50,26 +50,4 @@
         </div>
     </div>
 </section>
-
-<!-- ======= News Section ======= -->
-<section id="news" class="news">
-    <div class="container">
-        <div class="section-title">
-            <h2>Berita Terbaru</h2>
-            <p>Berita dan informasi terbaru seputar UMKM Kopi di Sumatera Selatan.</p>
-        </div>
-        <div class="row">
-            @foreach ($news as $item)
-                <div class="col-lg-4 col-md-6">
-                    <div class="news-item">
-                        <img src="{{ $item->image }}" class="img-fluid" alt="{{ $item->title }}">
-                        <h4><a href="{{ route('news.details', $item->id) }}">{{ $item->title }}</a></h4>
-                        <p>{{ Str::limit($item->content, 100) }}</p>
-                        <small>Published at: {{ $item->published_at }}</small>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </div>
-</section>
 @endsection
