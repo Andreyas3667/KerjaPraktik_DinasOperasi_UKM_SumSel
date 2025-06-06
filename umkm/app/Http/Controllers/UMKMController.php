@@ -31,9 +31,13 @@ class UMKMController extends Controller
      */
     public function manage(Request $request)
     {
-        $query = UMKM::with('produk', 'wilayah', 'user');
+        $query = \App\Models\UMKM::query();
 
-        // Filter search
+        if ($request->filled('wilayah')) {
+            $query->where('id_wilayah', $request->wilayah);
+        }
+
+        // Jika ada fitur pencarian
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -43,14 +47,10 @@ class UMKMController extends Controller
             });
         }
 
-        // Filter wilayah
-        if ($request->filled('wilayah')) {
-            $query->where('id_wilayah', $request->wilayah);
-        }
-
         $umkms = $query->get();
+        $wilayahs = \App\Models\Wilayah::all();
 
-        return view('admin.umkm.manage', compact('umkms'));
+        return view('admin.umkm.manage', compact('umkms', 'wilayahs'));
     }
 
     /**
@@ -58,17 +58,41 @@ class UMKMController extends Controller
      */
     public function store(Request $request)
     {
+        // Validasi input
         $validated = $request->validate([
+            'nama' => 'required|string|max:255', // nama penanggung jawab user
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
             'nama_usaha' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
             'alamat' => 'required|string',
             'kontak' => 'required|string',
             'longitude' => 'required|numeric',
             'latitude' => 'required|numeric',
             'id_wilayah' => 'required|exists:wilayah,id_wilayah',
-            'id_user' => 'required|exists:users,id_users',
         ]);
 
-        UMKM::create($validated);
+        // 1. Insert ke tabel users
+        $user = \App\Models\User::create([
+            'nama' => $validated['nama'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+            'role' => 'umkm',
+            'id_wilayah' => $validated['id_wilayah'],
+        ]);
+
+        // 2. Insert ke tabel umkm
+        UMKM::create([
+            'nama_usaha' => $validated['nama_usaha'],
+            'deskripsi' => $validated['deskripsi'] ?? null,
+            'alamat' => $validated['alamat'],
+            'kontak' => $validated['kontak'],
+            'longitude' => $validated['longitude'],
+            'latitude' => $validated['latitude'],
+            'id_wilayah' => $validated['id_wilayah'],
+            'id_user' => $user->id_users, // foreign key ke users
+        ]);
+
         return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil ditambahkan.');
     }
 

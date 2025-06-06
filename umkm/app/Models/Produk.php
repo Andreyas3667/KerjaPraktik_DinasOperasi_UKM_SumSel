@@ -12,6 +12,6 @@ class Produk extends Model
 
     public function umkm()
     {
-        return $this->belongsTo(Umkm::class);
+        return $this->belongsTo(UMKM::class, 'id_umkm', 'id_umkm');
     }
 }

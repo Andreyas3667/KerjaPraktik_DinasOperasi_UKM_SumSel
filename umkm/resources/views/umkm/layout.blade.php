@@ -16,7 +16,7 @@
 <div class="d-flex" id="wrapper">
     <!-- Sidebar -->
     <div class="bg-dark border-right" id="sidebar-wrapper">
-        <div class="sidebar-heading text-white">UMKM Panel</div>
+        <div class="sidebar-heading text-white">UMKM</div>
         <div class="list-group list-group-flush">
             <a href="{{ route('umkm.dashboard') }}" class="list-group-item list-group-item-action bg-dark text-white"><i class="fas fa-home"></i> Dashboard</a>
             <a href="{{ route('umkm.produk') }}" class="list-group-item list-group-item-action bg-dark text-white"><i class="fas fa-box"></i> Stok Barang</a>

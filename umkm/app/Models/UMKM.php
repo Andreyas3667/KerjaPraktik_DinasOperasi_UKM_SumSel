@@ -47,6 +47,6 @@ class UMKM extends Model
 
     public function produks()
     {
-        return $this->hasMany(Produk::class);
+        return $this->hasMany(Produk::class, 'id_umkm', 'id_umkm');
     }
 }

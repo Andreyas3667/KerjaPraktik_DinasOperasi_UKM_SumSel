@@ -71,10 +71,8 @@ Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('adm
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/admin/umkm/manage', [UMKMController::class, 'index'])->name('admin.umkm.manage');
+Route::get('/admin/umkm/manage', [UMKMController::class, 'manage'])->name('admin.umkm.manage');
 Route::post('/admin/umkm', [UMKMController::class, 'store'])->name('admin.umkm.store');
 Route::put('/admin/umkm/{id}', [UMKMController::class, 'update'])->name('admin.umkm.update');
 Route::delete('/admin/umkm/{id}', [UMKMController::class, 'destroy'])->name('admin.umkm.destroy');
 Route::get('/admin/umkm/search', [UMKMController::class, 'ajaxSearch'])->name('admin.umkm.search');
-
-
