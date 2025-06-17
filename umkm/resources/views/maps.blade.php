@@ -3,30 +3,48 @@
 @section('title', 'Peta UMKM')
 
 @section('content')
-<section class="container my-5">
-    <h2 class="text-center">Peta UMKM Kopi</h2>
-    <div id="map" style="width: 100%; height: 500px;"></div>
-</section>
+<div id="map" style="height: 500px;"></div>
+<script>
+let map = L.map('map').setView([-2.5, 104], 7);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+fetch('/api/umkm')
+    .then(res => res.json())
+    .then(data => {
+        data.forEach(umkm => {
+            if (umkm.latitude && umkm.longitude) {
+                let produkList = '';
+                umkm.produk.forEach(p => {
+                    produkList += `
+                        <div>
+                            <b>${p.nama_produk}</b> - Rp${p.harga}<br>
+                            <input type="number" id="qty_${p.id}" value="1" min="1" style="width:60px;">
+                            <a href="#" onclick="orderWA('${umkm.kontak}', '${p.nama_produk}', ${p.id}); return false;" class="btn btn-success btn-sm mt-1">Beli via WhatsApp</a>
+                        </div>
+                        <hr>
+                    `;
+                });
+                let popupContent = `
+                    <b>${umkm.nama_umkm}</b><br>
+                    ${umkm.alamat}<br>
+                    <hr>
+                    <b>Produk:</b><br>
+                    ${produkList}
+                `;
+                L.marker([umkm.latitude, umkm.longitude]).addTo(map)
+                    .bindPopup(popupContent);
+            }
+        });
+    });
+
+function orderWA(kontak, produk, id) {
+    let qty = document.getElementById('qty_' + id).value;
+    let pesan = encodeURIComponent(`Saya membeli produk ${produk} sebanyak ${qty}`);
+    window.open(`https://wa.me/${kontak}?text=${pesan}`, '_blank');
+}
+</script>
 @endsection
 
 @push('js')
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-    var map = L.map('map').setView([-3.319437, 103.914399], 7);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    fetch('/api/umkm')
-        .then(response => response.json())
-        .then(data => {
-            data.forEach(umkm => {
-                if (umkm.latitude && umkm.longitude) {
-                    L.marker([umkm.latitude, umkm.longitude])
-                        .addTo(map)
-                        .bindPopup("<b>" + umkm.nama_usaha + "</b><br><a href='/umkm/" + umkm.id_umkm + "'>Lihat Detail</a>");
-                }
-            });
-        });
-</script>
 @endpush

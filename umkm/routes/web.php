@@ -1,6 +1,8 @@
 <?php
 
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\front\NewsController; // Import NewsController
 use App\Http\Controllers\AdminController; // Import AdminController
 use App\Http\Controllers\DashboardController; // Import DashboardController
@@ -8,6 +10,11 @@ use App\Http\Controllers\UMKMController; // Import UMKMController
 use App\Http\Controllers\PenjualanController; // Import PenjualanController
 use App\Http\Controllers\MapsController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UMKMUserController;
+use App\Http\Controllers\Api\UMKMApiController;
+use App\Http\Controllers\ProfileController;
+
 
 Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
@@ -67,7 +74,8 @@ Route::get('/umkm/{id}', [\App\Http\Controllers\UMKMController::class, 'show'])-
 
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
-// Auth::routes();
+
+Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -76,3 +84,41 @@ Route::post('/admin/umkm', [UMKMController::class, 'store'])->name('admin.umkm.s
 Route::put('/admin/umkm/{id}', [UMKMController::class, 'update'])->name('admin.umkm.update');
 Route::delete('/admin/umkm/{id}', [UMKMController::class, 'destroy'])->name('admin.umkm.destroy');
 Route::get('/admin/umkm/search', [UMKMController::class, 'ajaxSearch'])->name('admin.umkm.search');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+});
+
+// Route untuk verifikasi email
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/home'); // atau redirect ke dashboard sesuai kebutuhan
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    // route khusus admin
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+});
+
+Route::middleware(['auth', 'role:umkm'])->group(function () {
+    // route khusus umkm
+    Route::get('/umkm/dashboard', [UMKMUserController::class, 'dashboard'])->name('umkm.dashboard');
+});
+
+Route::get('/umkm', [UMKMApiController::class, 'index']);
+Route::get('/umkm/{id}', [UMKMApiController::class, 'show']);
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
