@@ -55,6 +55,30 @@
         @endforelse
     </ul>
 </div>
+
+<div class="card mt-4">
+    <div class="card-header">Daftar Penjualan</div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Total</th>
+                    <!-- dst -->
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($penjualan as $item)
+                    <tr>
+                        <td>{{ $item->id }}</td>
+                        <td>{{ $item->total }}</td>
+                        <!-- dst -->
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
 @endsection
 
 @push('js')

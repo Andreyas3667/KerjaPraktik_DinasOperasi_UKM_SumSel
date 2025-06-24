@@ -14,7 +14,6 @@ class ProdukController extends Controller
         $user = auth()->user();
         $umkm = $user ? $user->umkm : null;
         if (!$umkm) {
-            // Tampilkan view produk dengan pesan error
             return view('umkm.produk', [
                 'produks' => collect(),
                 'error' => 'Anda belum memiliki data UMKM. Silakan lengkapi profil terlebih dahulu.'
@@ -41,10 +40,13 @@ class ProdukController extends Controller
 
         $user = auth()->user();
         $umkm = $user ? $user->umkm : null;
-        $umkm_id = $umkm ? $umkm->id_umkm : 1;
+
+        if (!$umkm) {
+            return redirect()->route('umkm.produk')->with('error', 'Anda belum memiliki data UMKM. Silakan lengkapi profil terlebih dahulu.');
+        }
 
         $data = $request->only(['nama_produk', 'deskripsi', 'stok', 'harga']);
-        $data['id_umkm'] = $umkm_id;
+        $data['id_umkm'] = $umkm->id_umkm;
 
         if ($request->hasFile('gambar')) {
             $data['gambar'] = $request->file('gambar')->store('produk', 'public');

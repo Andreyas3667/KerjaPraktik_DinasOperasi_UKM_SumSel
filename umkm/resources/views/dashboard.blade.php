@@ -17,12 +17,18 @@
             var map = L.map('map').setView([-3.319437, 103.914399], 7);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-            fetch('/api/umkm')
+            fetch('/umkm')
                 .then(response => response.json())
                 .then(data => {
                     data.forEach(umkm => {
-                        var marker = L.marker([umkm.latitude, umkm.longitude]).addTo(map)
-                            .bindPopup("<b>" + umkm.nama_usaha + "</b><br><a href='/umkm/" + umkm.id_umkm + "'>Lihat Detail</a>");
+                        // console.log(umkm);
+                        // Konversi ke float dan cek validitas
+                        var lat = parseFloat(umkm.latitude);
+                        var lng = parseFloat(umkm.longitude);
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                            L.marker([lat, lng]).addTo(map)
+                                .bindPopup("<b>" + umkm.nama_usaha + "</b><br><a href='/umkm/" + umkm.id_umkm + "'>Lihat Detail</a>");
+                        }
                     });
                 });
         </script>

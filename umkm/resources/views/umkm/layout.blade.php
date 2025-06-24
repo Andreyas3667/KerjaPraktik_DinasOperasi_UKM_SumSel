@@ -30,6 +30,16 @@
     <div id="page-content-wrapper" class="w-100">
         <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
             <span class="navbar-brand">UMKM Dashboard</span>
+            <div class="ml-auto">
+                @auth
+                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                        @csrf
+                        <button class="btn btn-outline-danger btn-sm" type="submit">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                @endauth
+            </div>
         </nav>
         <div class="container-fluid mt-4">
             @yield('content')

@@ -14,6 +14,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UMKMUserController;
 use App\Http\Controllers\Api\UMKMApiController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\SocialiteController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 
 
 Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
@@ -56,6 +58,7 @@ Route::prefix('umkm')->group(function () {
     Route::get('/laporan/export', [\App\Http\Controllers\UMKMUserController::class, 'exportPdf'])->name('umkm.laporan.export');
     Route::get('/profile', [\App\Http\Controllers\UMKMUserController::class, 'profile'])->name('umkm.profile');
     Route::post('/profile/update', [\App\Http\Controllers\UMKMUserController::class, 'updateProfile'])->name('umkm.profile.update');
+    Route::post('/umkm/{id}/transaksi', [\App\Http\Controllers\UMKMController::class, 'transaksi'])->name('umkm.transaksi');
 });
 
 // Dashboard customer (landing page)
@@ -70,9 +73,9 @@ Route::get('/profile', function() {
 })->name('profile');
 
 // Detail UMKM (dari peta/dashboard)
-Route::get('/umkm/{id}', [\App\Http\Controllers\UMKMController::class, 'show'])->name('umkm.detail');
+Route::get('/umkm/{id}', [\App\Http\Controllers\UMKMController::class, 'detail'])->name('umkm.detail');
 
-Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+Route::get('/admin/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('admin.dashboard');
 
 
 Auth::routes();
@@ -87,6 +90,7 @@ Route::get('/admin/umkm/search', [UMKMController::class, 'ajaxSearch'])->name('a
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 // Route untuk verifikasi email
@@ -115,10 +119,19 @@ Route::middleware(['auth', 'role:umkm'])->group(function () {
 });
 
 Route::get('/umkm', [UMKMApiController::class, 'index']);
-Route::get('/umkm/{id}', [UMKMApiController::class, 'show']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Socialite routes
+Route::get('login/google', [SocialiteController::class, 'redirectToGoogle'])->name('login.google');
+Route::get('login/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
+
+Route::get('login/facebook', [SocialiteController::class, 'redirectToFacebook'])->name('login.facebook');
+Route::get('login/facebook/callback', [SocialiteController::class, 'handleFacebookCallback']);
+
+Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+Route::post('register', [RegisteredUserController::class, 'store']);

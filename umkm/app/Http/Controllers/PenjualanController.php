@@ -79,9 +79,21 @@ class PenjualanController extends Controller
     }
     public function verifikasi(Request $request, $id)
     {
-        $trx = Transaksi::findOrFail($id);
+        $trx = \App\Models\Transaksi::with('detail.produk')->findOrFail($id);
         $trx->status_pembayaran = $request->status;
         $trx->save();
+
+        // Jika konfirmasi selesai, kurangi stok produk
+        if ($request->status == 'selesai') {
+            foreach ($trx->detail as $detail) {
+                $produk = $detail->produk;
+                if ($produk) {
+                    $produk->stok = max(0, $produk->stok - $detail->jumlah);
+                    $produk->save();
+                }
+            }
+        }
+
         return back()->with('success', 'Status pembayaran diperbarui.');
     }
     public function destroy($id)

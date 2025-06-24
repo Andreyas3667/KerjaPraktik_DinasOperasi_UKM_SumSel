@@ -53,7 +53,9 @@ class RegisterController extends Controller
             'nama' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:user,umkm'], // validasi role
+            'role' => ['required', 'in:user,umkm'],
+            'telepon' => ['required', 'string', 'max:20'],
+            'alamat' => ['required', 'string', 'max:255'],
         ]);
     }
 
@@ -70,6 +72,8 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'role' => $data['role'],
+            'telepon' => $data['telepon'],
+            'alamat' => $data['alamat'],
         ]);
     }
 }

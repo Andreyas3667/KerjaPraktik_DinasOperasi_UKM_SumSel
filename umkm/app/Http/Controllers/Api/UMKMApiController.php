@@ -9,7 +9,11 @@ class UMKMApiController extends Controller
 {
     public function index()
     {
-        return UMKM::with('produk')->get();
+        return UMKM::with('produk')
+            ->select('id_umkm', 'nama_usaha', 'alamat', 'latitude', 'longitude')
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->get();
     }
 
     public function show($id)

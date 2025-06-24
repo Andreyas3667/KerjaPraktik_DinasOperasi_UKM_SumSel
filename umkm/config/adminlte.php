@@ -177,6 +177,7 @@ return [
     'classes_auth_footer' => '',
     'classes_auth_icon' => '',
     'classes_auth_btn' => 'btn-flat btn-primary',
+    
 
     /*
     |--------------------------------------------------------------------------

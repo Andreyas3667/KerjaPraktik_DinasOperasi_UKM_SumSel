@@ -6,6 +6,9 @@ use App\Models\UMKM;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use App\Models\Transaksi;
+use App\Models\DetailTransaksi;
+use Illuminate\Support\Facades\DB;
 
 class UMKMController extends Controller
 {
@@ -156,5 +159,49 @@ class UMKMController extends Controller
         }
         $umkms = $query->get();
         return view('admin.umkm.partials.table', compact('umkms'))->render();
+    }
+    public function detail($id)
+    {
+        $umkm = \App\Models\UMKM::with('produk')->findOrFail($id);
+        return view('umkm.detail', compact('umkm'));
+    }
+    public function transaksi(Request $request, $id)
+    {
+        $umkm = \App\Models\UMKM::with('produk')->findOrFail($id);
+        $data = $request->validate([
+            'qty' => 'required|array',
+            'qty.*' => 'integer|min:1'
+        ]);
+        DB::beginTransaction();
+        try {
+            $trx = Transaksi::create([
+                'id_user' => auth()->id() ?? 1, // atau guest user
+                'id_umkm' => $umkm->id_umkm,
+                'status_pembayaran' => 'pending',
+                'total' => 0,
+                'tanggal_transaksi' => now(),
+            ]);
+            $total = 0;
+            foreach ($data['qty'] as $id_produk => $qty) {
+                $produk = $umkm->produk->where('id_produk', $id_produk)->first();
+                if ($produk && $qty > 0) {
+                    $subtotal = $produk->harga * $qty;
+                    DetailTransaksi::create([
+                        'id_transaksi' => $trx->id_transaksi,
+                        'id_produk' => $produk->id_produk,
+                        'jumlah' => $qty,
+                        'harga_satuan' => $produk->harga,
+                    ]);
+                    $total += $subtotal;
+                }
+            }
+            $trx->total = $total;
+            $trx->save();
+            DB::commit();
+            return response()->json(['success' => true, 'id' => $trx->id_transaksi]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 }

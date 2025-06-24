@@ -51,12 +51,15 @@ class UMKMUserController extends Controller
             ->limit(5)
             ->get();
 
+        $penjualan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)->get();
+
         return view('umkm.dashboard', [
             'totalProduk' => $totalProduk,
             'totalPenjualan' => $totalPenjualan,
             'totalTransaksi' => $totalTransaksi,
             'penjualanBulanan' => $penjualanBulanan,
             'produkTerlaris' => $produkTerlaris,
+            'penjualan' => $penjualan,
         ]);
     }
 

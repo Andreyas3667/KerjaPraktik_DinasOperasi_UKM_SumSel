@@ -8,7 +8,8 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        return view('admin.dashboard');
+        $penjualan = \App\Models\Transaksi::all();
+        return view('admin.dashboard', compact('penjualan'));
     }
 
     public function manageUsers()

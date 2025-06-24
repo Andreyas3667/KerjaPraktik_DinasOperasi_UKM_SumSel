@@ -21,6 +21,8 @@ class User extends Authenticatable
         'password',
         'role',
         'id_wilayah',
+        'telepon',
+        'alamat'
     ];
 
     protected $hidden = [
@@ -34,6 +36,6 @@ class User extends Authenticatable
     }
     public function umkm()
     {
-        return $this->hasOne(\App\Models\UMKM::class, 'user_id'); // sesuaikan foreign key jika perlu
+        return $this->hasOne(\App\Models\UMKM::class, 'id_user', 'id_users'); // sesuaikan foreign key jika perlu
     }
 }

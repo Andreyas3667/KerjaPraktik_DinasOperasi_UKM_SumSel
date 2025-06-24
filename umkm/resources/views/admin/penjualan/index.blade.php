@@ -39,6 +39,8 @@
                     <th>Harga</th>
                     <th>Jumlah</th>
                     <th>Total</th>
+                    <th>Pembeli</th>
+                    <th>Alamat Pembeli</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -51,6 +53,8 @@
                                 <td rowspan="{{ $trx->detail->count() }}">{{ $trx->umkm->nama_usaha ?? '-' }}</td>
                                 <td rowspan="{{ $trx->detail->count() }}">{{ $trx->umkm->wilayah->nama_wilayah ?? '-' }}</td>
                                 <td rowspan="{{ $trx->detail->count() }}">{{ $trx->tanggal_transaksi }}</td>
+                                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->user->nama ?? '-' }}</td>
+                                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->user->alamat ?? '-' }}</td>
                             @endif
                             <td>{{ $detail->produk->nama_produk ?? '-' }}</td>
                             <td>{{ number_format($detail->harga_satuan) }}</td>
@@ -58,20 +62,30 @@
                             <td>{{ number_format($detail->jumlah * $detail->harga_satuan) }}</td>
                             @if($i == 0)
                             <td rowspan="{{ $trx->detail->count() }}">
-                                <form action="{{ route('penjualan.destroy', $trx->id_transaksi) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <a href="{{ route('penjualan.show', $trx->id_transaksi) }}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
-                                    <a href="{{ route('penjualan.edit', $trx->id_transaksi) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
-                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                                </form>
+                                {{-- Hanya tombol konfirmasi status --}}
+                                @if($trx->status_pembayaran == 'pending')
+                                    <form action="{{ route('penjualan.verifikasi', $trx->id_transaksi) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        <input type="hidden" name="status" value="selesai">
+                                        <button class="btn btn-success btn-sm" title="Konfirmasi"><i class="fas fa-check"></i></button>
+                                    </form>
+                                    <form action="{{ route('penjualan.verifikasi', $trx->id_transaksi) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        <input type="hidden" name="status" value="batal">
+                                        <button class="btn btn-danger btn-sm" title="Batalkan"><i class="fas fa-times"></i></button>
+                                    </form>
+                                @elseif($trx->status_pembayaran == 'selesai')
+                                    <span class="badge badge-success">Sukses</span>
+                                @elseif($trx->status_pembayaran == 'batal')
+                                    <span class="badge badge-danger">Dibatalkan</span>
+                                @endif
                             </td>
                             @endif
                         </tr>
                     @endforeach
                 @empty
                     <tr>
-                        <td colspan="9" class="text-center">Tidak ada data penjualan</td>
+                        <td colspan="11" class="text-center">Tidak ada data penjualan</td>
                     </tr>
                 @endforelse
             </tbody>
