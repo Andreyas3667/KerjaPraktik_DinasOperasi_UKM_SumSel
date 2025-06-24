@@ -45,8 +45,8 @@ class LoginController extends Controller
             return redirect()->route('admin.dashboard');
         } elseif ($user->role == 'umkm') {
             return redirect()->route('umkm.dashboard');
-        } else {
-            return redirect()->route('dashboard');
         }
+
+        return redirect()->route('dashboard');
     }
 }

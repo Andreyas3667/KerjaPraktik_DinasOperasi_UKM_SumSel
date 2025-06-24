@@ -3,7 +3,7 @@
 @section('title', 'Dashboard UMKM')
 
 @section('content')
-<h3>Selamat Datang di Dashboard UMKM</h3>
+<h3>Selamat Datang di {{ $umkm->nama_usaha ?? 'Dashboard UMKM' }}</h3>
 <p>Kelola produk, laporan penjualan, dan profil UMKM Anda di sini.</p>
 
 <div class="row mb-4">

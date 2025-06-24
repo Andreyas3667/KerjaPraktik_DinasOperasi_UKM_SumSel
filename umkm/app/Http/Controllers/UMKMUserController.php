@@ -13,36 +13,37 @@ class UMKMUserController extends Controller
 {
     public function dashboard()
     {
-        // Jika login, pakai UMKM user. Jika tidak, pakai UMKM pertama
         $user = auth()->user();
         if ($user && $user->umkm) {
             $umkm = $user->umkm;
         } else {
             $umkm = \App\Models\UMKM::first();
             if (!$umkm) {
-                // Jika belum ada data UMKM sama sekali
                 return view('umkm.dashboard', [
+                    'umkm' => null,
                     'totalProduk' => 0,
                     'totalPenjualan' => 0,
                     'totalTransaksi' => 0,
                     'penjualanBulanan' => collect([]),
                     'produkTerlaris' => collect([]),
+                    'penjualan' => collect([]),
                 ]);
             }
         }
 
         $totalProduk = $umkm->produks()->count();
-        $totalPenjualan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)->sum('total');
-        $totalTransaksi = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)->count();
+        $totalPenjualan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)->where('status_pembayaran', 'selesai')->sum('total');
+        $totalTransaksi = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)->where('status_pembayaran', 'selesai')->count();
 
         $penjualanBulanan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)
+            ->where('status_pembayaran', 'selesai')
             ->selectRaw('DATE_FORMAT(tanggal_transaksi, "%Y-%m") as bulan, SUM(total) as total')
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->pluck('total', 'bulan');
 
         $produkTerlaris = \App\Models\DetailTransaksi::whereHas('transaksi', function($q) use ($umkm) {
-                $q->where('id_umkm', $umkm->id_umkm);
+                $q->where('id_umkm', $umkm->id_umkm)->where('status_pembayaran', 'selesai');
             })
             ->join('produk', 'detail_transaksi.id_produk', '=', 'produk.id_produk')
             ->select('produk.nama_produk', 'produk.gambar', \DB::raw('SUM(detail_transaksi.jumlah) as jumlah_terjual'))
@@ -51,9 +52,12 @@ class UMKMUserController extends Controller
             ->limit(5)
             ->get();
 
-        $penjualan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)->get();
+        $penjualan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)
+            ->where('status_pembayaran', 'selesai')
+            ->get();
 
         return view('umkm.dashboard', [
+            'umkm' => $umkm,
             'totalProduk' => $totalProduk,
             'totalPenjualan' => $totalPenjualan,
             'totalTransaksi' => $totalTransaksi,
@@ -83,8 +87,23 @@ class UMKMUserController extends Controller
         } else {
             $umkm = UMKM::first();
         }
-        $transaksis = $umkm ? Transaksi::with('detail.produk')->where('id_umkm', $umkm->id_umkm)->get() : [];
-        return view('umkm.laporan', compact('transaksis'));
+        $transaksis = $umkm
+            ? Transaksi::with('detail.produk')
+                ->where('id_umkm', $umkm->id_umkm)
+                ->where('status_pembayaran', 'selesai')
+                ->get()
+            : collect();
+
+        // Grouping penjualan per bulan
+        $dataPenjualanBulanan = $transaksis->filter(function($item) {
+            return $item->tanggal_transaksi;
+        })->groupBy(function($item) {
+            return \Carbon\Carbon::parse($item->tanggal_transaksi)->format('Y-m');
+        })->map(function($items) {
+            return $items->count();
+        });
+
+        return view('umkm.laporan', compact('transaksis', 'dataPenjualanBulanan'));
     }
 
     public function exportPdf()

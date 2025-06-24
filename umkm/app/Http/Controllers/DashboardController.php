@@ -62,7 +62,44 @@ class DashboardController extends Controller
 
     public function dashboard()
     {
-        // Anda bisa menyesuaikan data yang ingin dikirim ke view
-        return view('dashboard');
+        // Ambil daftar tahun dari transaksi
+        $tahunList = DB::table('transaksi')
+            ->selectRaw('YEAR(tanggal_transaksi) as tahun')
+            ->distinct()
+            ->orderBy('tahun', 'desc')
+            ->pluck('tahun');
+
+        // Data lain yang ingin dikirim ke view, misal:
+        $tahun = request('tahun', date('Y'));
+        // ...tambahkan data lain sesuai kebutuhan...
+
+        return view('admin.dashboard', compact('tahunList', 'tahun'));
+    }
+
+    public function userDashboard()
+    {
+        // Anda bisa menyesuaikan data yang ingin dikirim ke view dashboard user
+        return view('dashboard'); // Pastikan file resources/views/dashboard.blade.php ada
+    }
+
+    // Jika belum ada, tambahkan juga method adminDashboard untuk admin:
+    public function adminDashboard(Request $request)
+    {
+        // Ambil daftar tahun dari transaksi
+        $tahunList = \DB::table('transaksi')
+            ->selectRaw('YEAR(tanggal_transaksi) as tahun')
+            ->distinct()
+            ->orderBy('tahun', 'desc')
+            ->pluck('tahun')
+            ->toArray();
+
+        // Pilih tahun aktif (default tahun sekarang)
+        $tahun = $request->input('tahun', date('Y'));
+
+        // Data lain yang ingin dikirim ke view, misal penjualan, grafik, dsb.
+        // Contoh:
+        // $penjualan = ...;
+
+        return view('admin.dashboard', compact('tahunList', 'tahun'));
     }
 }
