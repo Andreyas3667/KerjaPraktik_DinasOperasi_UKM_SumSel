@@ -72,11 +72,7 @@ class UMKMUserController extends Controller
         if (auth()->check()) {
             $umkm = UMKM::where('id_user', auth()->id())->first();
             $produks = $umkm ? $umkm->produk : [];
-        } else {
-            // Tampilkan produk dari UMKM pertama (dummy)
-            $umkm = UMKM::first();
-            $produks = $umkm ? $umkm->produk : [];
-        }
+        } 
         return view('umkm.produk', compact('produks'));
     }
 
@@ -90,7 +86,7 @@ class UMKMUserController extends Controller
         $transaksis = $umkm
             ? Transaksi::with('detail.produk')
                 ->where('id_umkm', $umkm->id_umkm)
-                ->where('status_pembayaran', 'selesai')
+                ->where('status_pembayaran', 'selesai') // hanya yang sudah dikonfirmasi
                 ->get()
             : collect();
 
@@ -113,9 +109,14 @@ class UMKMUserController extends Controller
         } else {
             $umkm = UMKM::first();
         }
-        $transaksis = $umkm ? Transaksi::with('detail.produk')->where('id_umkm', $umkm->id_umkm)->get() : [];
+        $transaksis = $umkm
+            ? Transaksi::with('detail.produk')
+                ->where('id_umkm', $umkm->id_umkm)
+                ->where('status_pembayaran', 'selesai') // hanya yang sudah dikonfirmasi
+                ->get()
+            : [];
         $pdf = PDF::loadView('umkm.laporan_pdf', compact('transaksis'));
-        return $pdf->download('laporan-penjualan-umkm.pdf');
+        return $pdf->download('laporan-penjualan.pdf');
     }
 
     public function profile()

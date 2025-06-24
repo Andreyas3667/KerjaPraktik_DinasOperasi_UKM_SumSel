@@ -15,38 +15,30 @@
     <link href="assets/vendor/aos/aos.css" rel="stylesheet">
     <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
     <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-    <link href="assets/css/main.css" rel="stylesheet">
-
-    <style>
-        body {
-            background-color: #f8f9fa;
-            padding-top: 70px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('umkm/assets/css/main.css') }}">
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">Kopi Sriwijaya</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
+            <a class="navbar-brand" href="#">Kopi Sriwijaya</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-auto align-items-center">
                     <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
-                    @auth
-                        <li class="nav-item"><a class="nav-link" href="{{ route('profile.edit') }}">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
+                    @guest
                         <li class="nav-item">
-                            <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                                @csrf
-                                <button class="nav-link btn btn-link" type="submit" style="padding:0;color:#fff;">Logout</button>
-                            </form>
+                            <a class="nav-link btn btn-link p-0" href="{{ route('login') }}" style="display:inline;cursor:pointer;">Login</a>
                         </li>
                     @else
-                        <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
-                    @endauth
+                        <li class="nav-item">
+                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="nav-link btn btn-link p-0" style="display:inline;cursor:pointer;">Logout</button>
+                            </form>
+                        </li>
+                    @endguest
                 </ul>
             </div>
         </div>
@@ -114,7 +106,7 @@
     <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
     <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
     <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="{{ asset('umkm/assets/js/main.js') }}"></script>
     <script>
         // Hilangkan preloader setelah halaman selesai dimuat
         window.addEventListener('load', function() {

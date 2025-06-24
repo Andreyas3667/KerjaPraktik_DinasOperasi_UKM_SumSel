@@ -9,7 +9,7 @@
 </head>
 <body>
     <h2>Laporan Penjualan UMKM</h2>
-    @if($transaksis->count() > 0)
+    @if(!empty($transaksis) && count($transaksis) > 0)
         <table>
             <thead>
                 <tr>

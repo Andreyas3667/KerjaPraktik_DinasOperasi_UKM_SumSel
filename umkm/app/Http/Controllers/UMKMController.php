@@ -83,7 +83,7 @@ class UMKMController extends Controller
             'role' => 'umkm',
             'id_wilayah' => $validated['id_wilayah'],
         ]);
-
+        // dd($user);
         // 2. Insert ke tabel umkm
         UMKM::create([
             'nama_usaha' => $validated['nama_usaha'],
@@ -110,19 +110,16 @@ class UMKMController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'nama_usaha' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'alamat' => 'required|string',
-            'kontak' => 'required|string',
-            'longitude' => 'nullable|numeric',
-            'latitude' => 'nullable|numeric',
-            'id_wilayah' => 'required|exists:wilayah,id_wilayah',
-            'id_user' => 'required|exists:users,id_users',
-        ]);
-
         $umkm = UMKM::findOrFail($id);
-        $umkm->update($validated);
+        $umkm->nama_usaha = $request->nama_usaha;
+        $umkm->alamat = $request->alamat;
+        $umkm->kontak = $request->kontak;
+        $umkm->id_wilayah = $request->id_wilayah;
+        $umkm->deskripsi = $request->deskripsi; // pastikan ini ada
+        $umkm->longitude = $request->longitude;
+        $umkm->latitude = $request->latitude;
+        // ...field lain...
+        $umkm->save();
         return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil diperbarui.');
     }
 
@@ -131,7 +128,14 @@ class UMKMController extends Controller
      */
     public function destroy($id)
     {
-        $umkm = UMKM::findOrFail($id);
+        $umkm = \App\Models\UMKM::findOrFail($id);
+
+        // Hapus semua produk yang terkait dengan UMKM ini
+        $umkm->produk()->delete();
+
+        // Jika ada relasi lain (misal transaksi), hapus juga jika perlu
+        // $umkm->transaksi()->delete();
+
         $umkm->delete();
         return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil dihapus.');
     }
@@ -172,7 +176,7 @@ class UMKMController extends Controller
             'qty' => 'required|array',
             'qty.*' => 'integer|min:1'
         ]);
-        DB::beginTransaction();
+        \DB::beginTransaction();
         try {
             $trx = Transaksi::create([
                 'id_user' => auth()->id() ?? 1, // atau guest user
@@ -197,11 +201,14 @@ class UMKMController extends Controller
             }
             $trx->total = $total;
             $trx->save();
-            DB::commit();
-            return response()->json(['success' => true, 'id' => $trx->id_transaksi]);
+            \DB::commit();
+            return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            \DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(), // tampilkan pesan error detail
+            ], 500);
         }
     }
 }

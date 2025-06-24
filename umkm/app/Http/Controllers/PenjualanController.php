@@ -102,4 +102,12 @@ class PenjualanController extends Controller
         $trx->delete();
         return redirect()->route('penjualan.index')->with('success', 'Data penjualan berhasil dihapus.');
     }
+    public function batal($id, Request $request)
+    {
+        $trx = \App\Models\Transaksi::findOrFail($id);
+        $trx->status_pembayaran = 'batal';
+        $trx->save();
+
+        return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan.');
+    }
 }

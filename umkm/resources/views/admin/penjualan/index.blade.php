@@ -53,33 +53,33 @@
                                 <td rowspan="{{ $trx->detail->count() }}">{{ $trx->umkm->nama_usaha ?? '-' }}</td>
                                 <td rowspan="{{ $trx->detail->count() }}">{{ $trx->umkm->wilayah->nama_wilayah ?? '-' }}</td>
                                 <td rowspan="{{ $trx->detail->count() }}">{{ $trx->tanggal_transaksi }}</td>
-                                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->user->nama ?? '-' }}</td>
-                                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->user->alamat ?? '-' }}</td>
                             @endif
                             <td>{{ $detail->produk->nama_produk ?? '-' }}</td>
                             <td>{{ number_format($detail->harga_satuan) }}</td>
                             <td>{{ $detail->jumlah }}</td>
                             <td>{{ number_format($detail->jumlah * $detail->harga_satuan) }}</td>
                             @if($i == 0)
-                            <td rowspan="{{ $trx->detail->count() }}">
-                                {{-- Hanya tombol konfirmasi status --}}
-                                @if($trx->status_pembayaran == 'pending')
-                                    <form action="{{ route('penjualan.verifikasi', $trx->id_transaksi) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        <input type="hidden" name="status" value="selesai">
-                                        <button class="btn btn-success btn-sm" title="Konfirmasi"><i class="fas fa-check"></i></button>
-                                    </form>
-                                    <form action="{{ route('penjualan.verifikasi', $trx->id_transaksi) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        <input type="hidden" name="status" value="batal">
-                                        <button class="btn btn-danger btn-sm" title="Batalkan"><i class="fas fa-times"></i></button>
-                                    </form>
-                                @elseif($trx->status_pembayaran == 'selesai')
-                                    <span class="badge badge-success">Sukses</span>
-                                @elseif($trx->status_pembayaran == 'batal')
-                                    <span class="badge badge-danger">Dibatalkan</span>
-                                @endif
-                            </td>
+                                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->user->nama ?? '-' }}</td>
+                                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->user->alamat ?? '-' }}</td>
+                                <td rowspan="{{ $trx->detail->count() }}">
+                                    {{-- Aksi --}}
+                                    @if($trx->status_pembayaran == 'pending')
+                                        <form action="{{ route('penjualan.verifikasi', $trx->id_transaksi) }}" method="POST" style="display:inline;" onsubmit="return confirm('Konfirmasi pesanan?');">
+                                            @csrf
+                                            <input type="hidden" name="status" value="selesai">
+                                            <button class="btn btn-success btn-sm" title="Konfirmasi"><i class="fas fa-check"></i></button>
+                                        </form>
+                                        <form action="{{ route('penjualan.batal', $trx->id_transaksi) }}" method="POST" style="display:inline;" onsubmit="return confirm('Batalkan pesanan?');">
+                                            @csrf
+                                            <input type="hidden" name="status" value="batal">
+                                            <button class="btn btn-danger btn-sm" title="Batalkan"><i class="fas fa-times"></i></button>
+                                        </form>
+                                    @elseif($trx->status_pembayaran == 'selesai')
+                                        <span class="badge badge-success">Sukses</span>
+                                    @elseif($trx->status_pembayaran == 'batal')
+                                        <span class="badge badge-danger">Dibatalkan</span>
+                                    @endif
+                                </td>
                             @endif
                         </tr>
                     @endforeach

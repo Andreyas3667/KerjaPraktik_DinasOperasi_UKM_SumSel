@@ -55,6 +55,7 @@
                     <th>Alamat</th>
                     <th>Kontak</th>
                     <th>Wilayah</th>
+                    <th>Deskripsi</th> <!-- Tambahkan ini -->
                     <th>Menu Kopi/Produk</th>
                 </tr>
             </thead>
@@ -162,11 +163,35 @@
 @endif
 @endsection
 
+@push('css')
+<style>
+.select2-container {
+    width: 100% !important;
+}
+.select2-dropdown {
+    z-index: 9999 !important;
+}
+.select2-container .select2-selection--single .select2-selection__rendered {
+    padding-top: 5px !important;   /* Tambah padding atas */
+    padding-bottom: 5px !important;
+    line-height: 1.4 !important;   /* Bisa sesuaikan lagi jadi 1.5 atau 1.2 */
+    font-size: 14px !important;
+}
+.select2-container .select2-selection--single {
+    height: auto !important;
+    min-height: 38px !important; /* Sesuaikan tinggi agar proporsional */
+    display: flex;
+    align-items: center; /* Ini membantu vertikal centering */
+}
+</style>
+@endpush
+
 @push('js')
 <script>
     function initSelect2Wilayah() {
         $('#id_wilayah').select2({
             dropdownParent: $('#modalTambahUMKM .modal-content'),
+            width: '100%',
             placeholder: "Pilih Wilayah",
             allowClear: true
         });
@@ -213,6 +238,11 @@
                 let alamat = row.data('alamat');
                 let kontak = row.data('kontak');
                 let wilayah = row.data('wilayah');
+                let namapj = row.data('namapj');
+                let email = row.data('email');
+                let deskripsi = row.data('deskripsi');
+                let longitude = row.data('longitude');
+                let latitude = row.data('latitude');
 
                 // Isi form modal
                 $('#modalTambahUMKMLabel').text('Edit UMKM');
@@ -221,13 +251,15 @@
                 if (!$('#formUmkm input[name="_method"]').length) {
                     $('#formUmkm').append('<input type="hidden" name="_method" value="PUT" id="methodEdit">');
                 }
+                $('#nama').val(namapj);
+                $('#email').val(email);
+                $('#deskripsi').val(deskripsi);
                 $('#nama_usaha').val(nama);
                 $('#alamat').val(alamat);
                 $('#kontak').val(kontak);
                 $('#id_wilayah').val(wilayah).trigger('change');
-                $('#deskripsi').val(row.data('deskripsi'));
-                $('#longitude').val(row.data('longitude'));
-                $('#latitude').val(row.data('latitude'));
+                $('#longitude').val(longitude);
+                $('#latitude').val(latitude);
 
                 // Tampilkan modal
                 $('#modalTambahUMKM').modal('show');
@@ -262,9 +294,16 @@
         $(document).on('click', '.show-produk-btn', function() {
             let produk = $(this).data('produk');
             let list = '';
+            let storagePath = '{{ asset("storage") }}';
             if (produk.length) {
-                produk.forEach(function(nama) {
-                    list += '<li>' + nama + '</li>';
+                produk.forEach(function(item) {
+                    list += '<li>';
+                    if (item.gambar) {
+                        list += '<img src="' + storagePath + '/' + item.gambar + '" alt="Foto Produk" width="80"><br>';
+                    }
+                    list += '<strong>' + (item.nama_produk ?? '-') + '</strong><br>';
+                    list += (item.deskripsi ?? '-') + '<br>';
+                    list += '</li>';
                 });
             } else {
                 list = '<li>Tidak ada produk</li>';
@@ -329,6 +368,11 @@
             let alamat = row.data('alamat');
             let kontak = row.data('kontak');
             let wilayah = row.data('wilayah');
+            let namapj = row.data('namapj');
+            let email = row.data('email');
+            let deskripsi = row.data('deskripsi');
+            let longitude = row.data('longitude');
+            let latitude = row.data('latitude');
 
             // Isi form modal
             $('#modalTambahUMKMLabel').text('Edit UMKM');
@@ -337,13 +381,15 @@
             if (!$('#formUmkm input[name="_method"]').length) {
                 $('#formUmkm').append('<input type="hidden" name="_method" value="PUT" id="methodEdit">');
             }
+            $('#nama').val(namapj);
+            $('#email').val(email);
+            $('#deskripsi').val(deskripsi);
             $('#nama_usaha').val(nama);
             $('#alamat').val(alamat);
             $('#kontak').val(kontak);
             $('#id_wilayah').val(wilayah).trigger('change');
-            $('#deskripsi').val(row.data('deskripsi'));
-            $('#longitude').val(row.data('longitude'));
-            $('#latitude').val(row.data('latitude'));
+            $('#longitude').val(longitude);
+            $('#latitude').val(latitude);
 
             // Tampilkan modal
             $('#modalTambahUMKM').modal('show');
@@ -378,9 +424,16 @@
     $(document).on('click', '.show-produk-btn', function() {
         let produk = $(this).data('produk');
         let list = '';
+        let storagePath = '{{ asset("storage") }}';
         if (produk.length) {
-            produk.forEach(function(nama) {
-                list += '<li>' + nama + '</li>';
+            produk.forEach(function(item) {
+                list += '<li>';
+                if (item.gambar) {
+                    list += '<img src="' + storagePath + '/' + item.gambar + '" alt="Foto Produk" width="80"><br>';
+                }
+                list += '<strong>' + (item.nama_produk ?? '-') + '</strong><br>';
+                list += (item.deskripsi ?? '-') + '<br>';
+                list += '</li>';
             });
         } else {
             list = '<li>Tidak ada produk</li>';

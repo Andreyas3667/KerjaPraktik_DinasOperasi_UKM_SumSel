@@ -16,20 +16,18 @@ class DashboardController extends Controller
     {
         $tahun = $request->input('tahun', date('Y'));
 
-        // Penjualan per bulan
-        $penjualan = DB::table('transaksi')
+        $penjualanBulanan = DB::table('transaksi')
             ->selectRaw('MONTH(tanggal_transaksi) as bulan, SUM(total) as total')
+            ->whereYear('tanggal_transaksi', $tahun)
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->pluck('total', 'bulan');
 
-        // Total UMKM per wilayah
         $umkmWilayah = DB::table('umkm')
             ->selectRaw('id_wilayah, COUNT(*) as total')
             ->groupBy('id_wilayah')
             ->pluck('total', 'id_wilayah');
 
-        // Produk paling laris
         $produkLaris = DB::table('detail_transaksi')
             ->join('produk', 'detail_transaksi.id_produk', '=', 'produk.id_produk')
             ->select('produk.nama_produk', DB::raw('SUM(detail_transaksi.jumlah) as total'))
@@ -38,26 +36,30 @@ class DashboardController extends Controller
             ->limit(5)
             ->pluck('total', 'produk.nama_produk');
 
-        // Penjualan per UMKM (grafik baru)
         $umkmPenjualan = DB::table('transaksi')
             ->join('umkm', 'transaksi.id_umkm', '=', 'umkm.id_umkm')
             ->select('umkm.nama_usaha', DB::raw('SUM(transaksi.total) as total'))
             ->whereYear('transaksi.tanggal_transaksi', $tahun)
+            ->where('transaksi.status_pembayaran', 'selesai') // pastikan hanya transaksi sukses
             ->groupBy('umkm.nama_usaha')
             ->orderByDesc('total')
             ->pluck('total', 'umkm.nama_usaha');
 
-        // Ambil daftar tahun dari transaksi
         $tahunList = DB::table('transaksi')
             ->selectRaw('YEAR(tanggal_transaksi) as tahun')
             ->distinct()
             ->orderBy('tahun', 'desc')
             ->pluck('tahun');
 
-        return view('admin.dashboard', compact(
-            'penjualan', 'umkmWilayah', 'produkLaris',
-            'umkmPenjualan', 'tahun', 'tahunList'
-        ));
+        // Kirim semua variabel ke view
+        return view('admin.dashboard', [
+            'penjualanBulanan' => $penjualanBulanan,
+            'umkmWilayah' => $umkmWilayah,
+            'produkLaris' => $produkLaris,
+            'umkmPenjualan' => $umkmPenjualan,
+            'tahun' => $tahun,
+            'tahunList' => $tahunList,
+        ]);
     }
 
     public function dashboard()
@@ -86,7 +88,7 @@ class DashboardController extends Controller
     public function adminDashboard(Request $request)
     {
         // Ambil daftar tahun dari transaksi
-        $tahunList = \DB::table('transaksi')
+        $tahunList = DB::table('transaksi')
             ->selectRaw('YEAR(tanggal_transaksi) as tahun')
             ->distinct()
             ->orderBy('tahun', 'desc')

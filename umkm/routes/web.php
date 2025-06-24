@@ -48,6 +48,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
         Route::get('{id}', [PenjualanController::class, 'show'])->name('penjualan.show');
         Route::get('{id}/edit', [PenjualanController::class, 'edit'])->name('penjualan.edit');
         Route::put('{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
+        Route::post('/admin/penjualan/{id}/batal', [\App\Http\Controllers\PenjualanController::class, 'batal'])->name('penjualan.batal');
     });
 });
 
@@ -66,7 +67,6 @@ Route::prefix('umkm')->middleware(['auth', 'role:umkm'])->group(function () {
     Route::get('/laporan/export', [UMKMUserController::class, 'exportPdf'])->name('umkm.laporan.export');
     Route::get('/profile', [UMKMUserController::class, 'profile'])->name('umkm.profile');
     Route::post('/profile/update', [UMKMUserController::class, 'updateProfile'])->name('umkm.profile.update');
-    Route::post('/{id}/transaksi', [UMKMController::class, 'transaksi'])->name('umkm.transaksi');
 });
 
 // ===================
@@ -114,3 +114,5 @@ Route::get('login/facebook', [SocialiteController::class, 'redirectToFacebook'])
 Route::get('login/facebook/callback', [SocialiteController::class, 'handleFacebookCallback']);
 Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('register', [RegisteredUserController::class, 'store']);
+Route::post('/umkm/{id}/transaksi', [UMKMController::class, 'transaksi'])->middleware('auth')->name('umkm.transaksi');
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');

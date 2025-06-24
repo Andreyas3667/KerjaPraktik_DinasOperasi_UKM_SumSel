@@ -20,6 +20,9 @@
                 <th>Harga</th>
                 <th>Jumlah</th>
                 <th>Total</th>
+                <th>Pembeli</th>
+                <th>Alamat Pembeli</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -36,11 +39,22 @@
                         <td>{{ number_format($detail->harga_satuan) }}</td>
                         <td>{{ $detail->jumlah }}</td>
                         <td>{{ number_format($detail->jumlah * $detail->harga_satuan) }}</td>
+                        <td>{{ $trx->user->nama ?? '-' }}</td>
+                        <td>{{ $trx->user->alamat ?? '-' }}</td>
+                        <td>
+                            @if($trx->status_pembayaran == 'selesai')
+                                Berhasil
+                            @elseif($trx->status_pembayaran == 'batal')
+                                Batal
+                            @else
+                                Proses
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             @empty
                 <tr>
-                    <td colspan="8" class="text-center">Tidak ada data penjualan</td>
+                    <td colspan="11" class="text-center">Tidak ada data penjualan</td>
                 </tr>
             @endforelse
         </tbody>

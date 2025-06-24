@@ -5,51 +5,84 @@
     <div class="card shadow">
         <div class="card-body">
             <h2 class="mb-1">{{ $umkm->nama_usaha }}</h2>
+            @if($umkm->deskripsi)
+                <p class="mb-1">{{ $umkm->deskripsi }}</p>
+            @endif
             <p class="text-muted mb-3"><i class="fas fa-map-marker-alt"></i> {{ $umkm->alamat }}</p>
             <hr>
             <h4 class="mb-3">Katalog Produk</h4>
             <form id="formKeranjang">
-                <div class="table-responsive">
-                    <table class="table table-hover table-bordered">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>Produk</th>
-                                <th>Deskripsi</th>
-                                <th>Harga</th>
-                                <th>Stok</th>
-                                <th>Jumlah</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($umkm->produk as $produk)
-                            <tr>
-                                <td>
-                                    <b>{{ $produk->nama_produk }}</b>
-                                    @if($produk->gambar)
-                                        <br>
-                                        <img src="{{ asset('storage/'.$produk->gambar) }}" width="60" class="rounded mt-1">
-                                    @endif
-                                </td>
-                                <td>{{ $produk->deskripsi }}</td>
-                                <td>Rp {{ number_format($produk->harga) }}</td>
-                                <td>{{ $produk->stok }}</td>
-                                <td style="width:120px;">
-                                    <input type="number" min="0" max="{{ $produk->stok }}" name="qty[{{ $produk->id_produk }}]" class="form-control" value="0">
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>Produk</th>
+                                        <th>Deskripsi</th>
+                                        <th>Harga</th>
+                                        <th>Stok</th>
+                                        <th>Jumlah</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($umkm->produk as $produk)
+                                    <tr>
+                                        <td>
+                                            <b>{{ $produk->nama_produk }}</b>
+                                            @if($produk->gambar)
+                                                <br>
+                                                <img src="{{ asset('storage/'.$produk->gambar) }}" width="60" class="rounded mt-1">
+                                            @endif
+                                        </td>
+                                        <td>{{ $produk->deskripsi }}</td>
+                                        <td>Rp {{ number_format($produk->harga) }}</td>
+                                        <td>{{ $produk->stok }}</td>
+                                        <td style="width:120px;">
+                                            <input type="number" min="0" max="{{ $produk->stok }}" name="qty[{{ $produk->id_produk }}]" class="form-control" value="0">
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @auth
+                            <button type="button" class="btn btn-success mt-3" onclick="checkoutWA()">
+                                <i class="fab fa-whatsapp"></i> Beli via WhatsApp
+                            </button>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-success mt-3">
+                                <i class="fab fa-whatsapp"></i> Login untuk Membeli
+                            </a>
+                        @endauth
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-info mb-3">
+                            <div class="card-header bg-info text-white"><b>Tutorial Pembayaran</b></div>
+                            <div class="card-body">
+                                <ol class="mb-2">
+                                    <li>Pilih produk dan jumlah yang ingin dibeli.</li>
+                                    <li>Klik tombol <b>Beli via WhatsApp</b>.</li>
+                                    <li>Anda akan diarahkan ke WhatsApp dengan format pesanan otomatis.</li>
+                                    <li>Kirim pesan ke penjual dan tunggu konfirmasi dari Admin.</li>
+                                    <li>Lakukan pembayaran sesuai instruksi dari Admin.</li>
+                                    <li>Pesanan akan diproses setelah pembayaran dikonfirmasi.</li>
+                                </ol>
+                                <p class="mb-0"><b>Catatan:</b> Pastikan Anda sudah login sebelum melakukan pembelian.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <button type="button" class="btn btn-success mt-3" onclick="checkoutWA()">
-                    <i class="fab fa-whatsapp"></i> Beli via WhatsApp
-                </button>
             </form>
         </div>
     </div>
 </div>
 <script>
 function checkoutWA() {
+    @guest
+        window.location.href = "{{ route('login') }}";
+        return;
+    @endguest
     let form = document.getElementById('formKeranjang');
     let data = new FormData(form);
     let pesan = "Halo, saya ingin membeli produk berikut:%0A";
