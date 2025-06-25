@@ -21,13 +21,14 @@
                 .then(response => response.json())
                 .then(data => {
                     data.forEach(umkm => {
-                        // console.log(umkm);
-                        // Konversi ke float dan cek validitas
                         var lat = parseFloat(umkm.latitude);
                         var lng = parseFloat(umkm.longitude);
                         if (!isNaN(lat) && !isNaN(lng)) {
+                            let popupContent = `<b>${umkm.nama_usaha}</b><br>
+                                <small>${umkm.deskripsi ?? ''}</small><br>
+                                <a href='/umkm/${umkm.id_umkm}'>Lihat Detail</a>`;
                             L.marker([lat, lng]).addTo(map)
-                                .bindPopup("<b>" + umkm.nama_usaha + "</b><br><a href='/umkm/" + umkm.id_umkm + "'>Lihat Detail</a>");
+                                .bindPopup(popupContent);
                         }
                     });
                 });

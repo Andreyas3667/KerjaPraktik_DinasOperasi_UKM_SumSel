@@ -45,49 +45,77 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($transaksis as $trx)
-                    @foreach($trx->detail as $i => $detail)
-                        <tr>
-                            @if($i == 0)
-                                <td rowspan="{{ $trx->detail->count() }}">{{ $loop->parent->iteration }}</td>
-                                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->umkm->nama_usaha ?? '-' }}</td>
-                                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->umkm->wilayah->nama_wilayah ?? '-' }}</td>
-                                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->tanggal_transaksi }}</td>
-                            @endif
-                            <td>{{ $detail->produk->nama_produk ?? '-' }}</td>
-                            <td>{{ number_format($detail->harga_satuan) }}</td>
-                            <td>{{ $detail->jumlah }}</td>
-                            <td>{{ number_format($detail->jumlah * $detail->harga_satuan) }}</td>
-                            @if($i == 0)
-                                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->user->nama ?? '-' }}</td>
-                                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->user->alamat ?? '-' }}</td>
-                                <td rowspan="{{ $trx->detail->count() }}">
-                                    {{-- Aksi --}}
-                                    @if($trx->status_pembayaran == 'pending')
-                                        <form action="{{ route('penjualan.verifikasi', $trx->id_transaksi) }}" method="POST" style="display:inline;" onsubmit="return confirm('Konfirmasi pesanan?');">
-                                            @csrf
-                                            <input type="hidden" name="status" value="selesai">
-                                            <button class="btn btn-success btn-sm" title="Konfirmasi"><i class="fas fa-check"></i></button>
-                                        </form>
-                                        <form action="{{ route('penjualan.batal', $trx->id_transaksi) }}" method="POST" style="display:inline;" onsubmit="return confirm('Batalkan pesanan?');">
-                                            @csrf
-                                            <input type="hidden" name="status" value="batal">
-                                            <button class="btn btn-danger btn-sm" title="Batalkan"><i class="fas fa-times"></i></button>
-                                        </form>
-                                    @elseif($trx->status_pembayaran == 'selesai')
-                                        <span class="badge badge-success">Sukses</span>
-                                    @elseif($trx->status_pembayaran == 'batal')
-                                        <span class="badge badge-danger">Dibatalkan</span>
-                                    @endif
-                                </td>
-                            @endif
-                        </tr>
+@forelse($transaksis as $trx)
+    @foreach($trx->detail as $i => $detail)
+        <tr>
+            @if($i == 0)
+                <td rowspan="{{ $trx->detail->count() }}">{{ $loop->parent->iteration }}</td>
+                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->umkm->nama_usaha ?? '-' }}</td>
+                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->umkm->wilayah->nama_wilayah ?? '-' }}</td>
+                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->tanggal_transaksi }}</td>
+            @endif
+            <td>{{ $detail->produk->nama_produk ?? '-' }}</td>
+            <td>{{ number_format($detail->harga_satuan) }}</td>
+            <td>{{ $detail->jumlah }}</td>
+            <td>{{ number_format($detail->jumlah * $detail->harga_satuan) }}</td>
+            @if($i == 0)
+                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->user->nama ?? '-' }}</td>
+                <td rowspan="{{ $trx->detail->count() }}">{{ $trx->user->alamat ?? '-' }}</td>
+                <td rowspan="{{ $trx->detail->count() }}">
+                    {{-- Aksi --}}
+                    @if($trx->status_pembayaran == 'pending')
+                        <form action="{{ route('penjualan.verifikasi', $trx->id_transaksi) }}" method="POST" style="display:inline;" onsubmit="return confirm('Konfirmasi pesanan?');">
+                            @csrf
+                            <input type="hidden" name="status" value="selesai">
+                            <button class="btn btn-success btn-sm" title="Konfirmasi"><i class="fas fa-check"></i></button>
+                        </form>
+                        <form action="{{ route('penjualan.batal', $trx->id_transaksi) }}" method="POST" style="display:inline;" onsubmit="return confirm('Batalkan pesanan?');">
+                            @csrf
+                            <input type="hidden" name="status" value="batal">
+                            <button class="btn btn-danger btn-sm" title="Batalkan"><i class="fas fa-times"></i></button>
+                        </form>
+                    @elseif($trx->status_pembayaran == 'selesai')
+                        <span class="badge badge-success">Sukses</span>
+                    @elseif($trx->status_pembayaran == 'batal')
+                        <span class="badge badge-danger">Dibatalkan</span>
+                    @endif
+                    {{-- Tombol Edit Jumlah untuk setiap detail --}}
+                    @foreach($trx->detail as $d)
+                        @if($trx->status_pembayaran == 'pending')
+                            <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editJumlahModal{{ $d->id_detail }}" title="Edit Jumlah">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            <!-- Modal Edit Jumlah -->
+                            <div class="modal fade" id="editJumlahModal{{ $d->id_detail }}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <form action="{{ route('penjualan.editJumlah', $d->id_detail) }}" method="POST">
+                                        @csrf
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Edit Jumlah Pesanan</h5>
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="number" name="jumlah" class="form-control" value="{{ $d->jumlah }}" min="1" required>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-primary">Simpan</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        @endif
                     @endforeach
-                @empty
-                    <tr>
-                        <td colspan="11" class="text-center">Tidak ada data penjualan</td>
-                    </tr>
-                @endforelse
+                </td>
+            @endif
+        </tr>
+    @endforeach
+@empty
+    <tr>
+        <td colspan="11" class="text-center">Tidak ada data penjualan</td>
+    </tr>
+@endforelse
             </tbody>
         </table>
     </div>

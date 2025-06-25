@@ -133,8 +133,8 @@ class UMKMController extends Controller
         // Hapus semua produk yang terkait dengan UMKM ini
         $umkm->produk()->delete();
 
-        // Jika ada relasi lain (misal transaksi), hapus juga jika perlu
-        // $umkm->transaksi()->delete();
+        // Set id_umkm pada transaksi menjadi null
+        \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)->update(['id_umkm' => null]);
 
         $umkm->delete();
         return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil dihapus.');

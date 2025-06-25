@@ -10,7 +10,7 @@ class UMKMApiController extends Controller
     public function index()
     {
         return UMKM::with('produk')
-            ->select('id_umkm', 'nama_usaha', 'alamat', 'latitude', 'longitude')
+            ->select('id_umkm', 'nama_usaha', 'alamat', 'latitude', 'longitude', 'deskripsi') // pastikan 'deskripsi' ada di sini
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->get();

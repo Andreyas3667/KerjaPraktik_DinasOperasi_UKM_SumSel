@@ -16,12 +16,11 @@ class MapsController extends Controller
     public function getUmkm()
     {
         $umkms = \App\Models\UMKM::with('produk')
-            ->select('id_umkm', 'nama_usaha', 'alamat', 'latitude', 'longitude')
+            ->select('id_umkm', 'nama_usaha', 'alamat', 'latitude', 'longitude', 'deskripsi')
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->get();
 
-        // Jika ingin kirim produk juga:
         $umkms = $umkms->map(function($umkm) {
             return [
                 'id_umkm' => $umkm->id_umkm,
@@ -29,6 +28,7 @@ class MapsController extends Controller
                 'alamat' => $umkm->alamat,
                 'latitude' => $umkm->latitude,
                 'longitude' => $umkm->longitude,
+                'deskripsi' => $umkm->deskripsi,
                 'produk' => $umkm->produk->map(function($p) {
                     return [
                         'id' => $p->id_produk,

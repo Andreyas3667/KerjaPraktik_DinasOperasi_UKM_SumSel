@@ -49,6 +49,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
         Route::get('{id}/edit', [PenjualanController::class, 'edit'])->name('penjualan.edit');
         Route::put('{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
         Route::post('/admin/penjualan/{id}/batal', [\App\Http\Controllers\PenjualanController::class, 'batal'])->name('penjualan.batal');
+        Route::post('/admin/penjualan/{detail}/edit-jumlah', [\App\Http\Controllers\PenjualanController::class, 'editJumlah'])->name('penjualan.editJumlah');
     });
 });
 

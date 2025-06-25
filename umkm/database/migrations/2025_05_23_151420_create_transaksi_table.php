@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('transaksi', function (Blueprint $table) {
             $table->bigIncrements('id_transaksi');
             $table->unsignedBigInteger('id_user');
-            $table->unsignedBigInteger('id_umkm');
+            $table->unsignedBigInteger('id_umkm')->nullable();
             $table->string('status_pembayaran')->default('pending'); // pending, selesai, dibatalkan
             $table->integer('total');
             $table->date('tanggal_transaksi');
             $table->timestamps();
 
             $table->foreign('id_user')->references('id_users')->on('users')->onDelete('restrict');
-            $table->foreign('id_umkm')->references('id_umkm')->on('umkm')->onDelete('restrict');
+            $table->foreign('id_umkm')->references('id_umkm')->on('umkm')->onDelete('set null');
         });
     }
 

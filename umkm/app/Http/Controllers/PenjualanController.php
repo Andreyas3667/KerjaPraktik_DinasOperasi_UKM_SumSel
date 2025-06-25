@@ -110,4 +110,22 @@ class PenjualanController extends Controller
 
         return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan.');
     }
+    public function editJumlah(Request $request, $detailId)
+    {
+        $request->validate([
+            'jumlah' => 'required|integer|min:1'
+        ]);
+        $detail = \App\Models\DetailTransaksi::findOrFail($detailId);
+        $detail->jumlah = $request->jumlah;
+        $detail->save();
+
+        // Update total transaksi
+        $trx = $detail->transaksi;
+        $trx->total = $trx->detail->sum(function($d) {
+            return $d->jumlah * $d->harga_satuan;
+        });
+        $trx->save();
+
+        return redirect()->back()->with('success', 'Jumlah pesanan berhasil diubah.');
+    }
 }
