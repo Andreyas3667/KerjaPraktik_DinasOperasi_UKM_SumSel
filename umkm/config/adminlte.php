@@ -195,7 +195,7 @@ return [
     'classes_content_wrapper' => '',
     'classes_content_header' => '',
     'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-primary elevation-4',
+    'classes_sidebar' => 'sidebar-dark-success elevation-4',
     'classes_sidebar_nav' => '',
     'classes_topnav' => 'navbar-white navbar-light',
     'classes_topnav_nav' => 'navbar-expand',
@@ -309,13 +309,13 @@ return [
             'icon' => 'fas fa-fw fa-tachometer-alt',
         ],
         [
-            'text' => 'UMKM', // Ubah dari 'Kelola UMKM'
+            'text' => 'UMKM',
             'url' => 'admin/umkm',
             'icon' => 'fas fa-fw fa-store',
         ],
         [
             'text' => 'Penjualan',
-            'url' => 'admin/penjualan', // Ganti dari submenu menjadi satu url
+            'url' => 'admin/penjualan',
             'icon' => 'fas fa-fw fa-chart-line',
         ],
         [
@@ -326,12 +326,12 @@ return [
         ['header' => 'ACCOUNT SETTINGS'],
         [
             'text' => 'Profile',
-            'url' => 'admin/settings',
+            'url'  => 'profile',
             'icon' => 'fas fa-fw fa-user',
         ],
         [
             'text' => 'Change Password',
-            'url' => 'admin/settings',
+            'url'  => 'change-password',
             'icon' => 'fas fa-fw fa-lock',
         ],
     ],
