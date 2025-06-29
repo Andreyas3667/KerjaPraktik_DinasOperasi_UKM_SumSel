@@ -35,7 +35,7 @@ class AdminWilayahController extends Controller
             'role' => 'admin_wilayah',
             'id_wilayah' => $request->id_wilayah,
         ]);
-        return redirect()->route('admin.admin-wilayah.index')->with('success', 'Admin wilayah berhasil ditambahkan');
+        return redirect()->route('admin-wilayah.index')->with('success', 'Admin wilayah berhasil ditambahkan');
     }
     // Tambahkan edit, update, destroy sesuai kebutuhan
 }

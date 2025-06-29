@@ -8,7 +8,6 @@
 
 @section('content')
     <a href="{{ route('admin-wilayah.create') }}" class="btn btn-primary mb-3">Tambah Admin Wilayah</a>
-    <a href="{{ route('admin-wilayah.create') }}" class="btn btn-primary mb-3">Tambah Admin Wilayah</a>
     <div class="card">
         <div class="card-body table-responsive">
             <table class="table table-bordered">

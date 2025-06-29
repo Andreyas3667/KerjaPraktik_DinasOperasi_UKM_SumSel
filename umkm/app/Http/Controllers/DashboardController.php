@@ -51,6 +51,11 @@ class DashboardController extends Controller
             ->orderBy('tahun', 'desc')
             ->pluck('tahun');
 
+        $penjualan = \App\Models\Transaksi::where('status_pembayaran', 'selesai')
+            ->whereYear('tanggal_transaksi', $tahun)
+            ->orderByDesc('tanggal_transaksi')
+            ->get();
+
         // Kirim semua variabel ke view
         return view('admin.dashboard', [
             'penjualanBulanan' => $penjualanBulanan,
@@ -59,6 +64,7 @@ class DashboardController extends Controller
             'umkmPenjualan' => $umkmPenjualan,
             'tahun' => $tahun,
             'tahunList' => $tahunList,
+            'penjualan' => $penjualan, // <-- tambahkan ini
         ]);
     }
 
@@ -100,8 +106,11 @@ class DashboardController extends Controller
 
         // Data lain yang ingin dikirim ke view, misal penjualan, grafik, dsb.
         // Contoh:
-        // $penjualan = ...;
+        $penjualan = \App\Models\Transaksi::where('status_pembayaran', 'selesai')
+            ->whereYear('tanggal_transaksi', $tahun)
+            ->orderByDesc('tanggal_transaksi')
+            ->get();
 
-        return view('admin.dashboard', compact('tahunList', 'tahun'));
+        return view('admin.dashboard', compact('tahunList', 'tahun', 'penjualan'));
     }
 }

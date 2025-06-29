@@ -65,7 +65,7 @@
     }
 @endphp
 
-@if($transaksis->count() > 0)
+{{-- @if($transaksis->count() > 0)
     @foreach($transaksis->filter(fn($item) => $item->tanggal_transaksi)->groupBy(function($item) {
         return \Carbon\Carbon::parse($item->tanggal_transaksi)->format('Y-m');
     }) as $bulan => $transaksiBulan)
@@ -73,7 +73,7 @@
         <ul>
             @foreach($transaksiBulan as $trx)
                 <li>
-                    {{ $trx->tanggal_transaksi }} - 
+                    {{ $trx->tanggal_transaksi }} -
                     @foreach($trx->detail as $detail)
                         {{ $detail->produk->nama_produk ?? '-' }} ({{ $detail->jumlah }})@if(!$loop->last), @endif
                     @endforeach
@@ -81,4 +81,4 @@
             @endforeach
         </ul>
     @endforeach
-@endif
+@endif --}}

@@ -323,17 +323,13 @@ return [
             'icon' => 'fas fa-fw fa-users-cog',
             'url'  => 'admin/admin-wilayah',
         ],
-        ['header' => 'ACCOUNT SETTINGS'],
         [
-            'text' => 'Profile',
-            'url'  => 'profile',
-            'icon' => 'fas fa-fw fa-user',
+            'text' => 'Logout',
+            'url'  => 'logout',
+            'icon' => 'fas fa-fw fa-sign-out-alt',
+            'method' => 'post',
         ],
-        [
-            'text' => 'Change Password',
-            'url'  => 'change-password',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
+
     ],
 
     /*
