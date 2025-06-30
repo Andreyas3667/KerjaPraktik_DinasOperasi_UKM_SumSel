@@ -6,6 +6,15 @@
 <h3>Selamat Datang di {{ $umkm->nama_usaha ?? 'Dashboard UMKM' }}</h3>
 <p>Kelola produk, laporan penjualan, dan profil UMKM Anda di sini.</p>
 
+<form method="GET" class="form-inline mb-3">
+    <label for="tahun" class="mr-2">Tahun:</label>
+    <select name="tahun" id="tahun" class="form-control mr-2" onchange="this.form.submit()">
+        @foreach($tahunList as $t)
+            <option value="{{ $t }}" {{ $tahun == $t ? 'selected' : '' }}>{{ $t }}</option>
+        @endforeach
+    </select>
+</form>
+
 <div class="row mb-4">
     <div class="col-md-4">
         <div class="card text-center">
@@ -62,19 +71,27 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Produk</th>
+                    <th>Jumlah</th>
+                    <th>Harga Satuan</th>
                     <th>Total</th>
-                    <!-- dst -->
                 </tr>
             </thead>
             <tbody>
-                @foreach($penjualan as $item)
+                @forelse($penjualan as $trx)
+                    @foreach($trx->detail as $detail)
+                        <tr>
+                            <td>{{ $detail->produk->nama_produk ?? '-' }}</td>
+                            <td>{{ $detail->jumlah }}</td>
+                            <td>Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
+                            <td>Rp {{ number_format($detail->jumlah * $detail->harga_satuan, 0, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
+                @empty
                     <tr>
-                        <td>{{ $item->id }}</td>
-                        <td>{{ $item->total }}</td>
-                        <!-- dst -->
+                        <td colspan="4" class="text-center">Tidak ada data penjualan.</td>
                     </tr>
-                @endforeach
+                @endforelse
             </tbody>
         </table>
     </div>

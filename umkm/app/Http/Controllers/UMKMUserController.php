@@ -11,32 +11,37 @@ use Auth;
 
 class UMKMUserController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $user = auth()->user();
-        if ($user && $user->umkm) {
-            $umkm = $user->umkm;
-        } else {
-            $umkm = \App\Models\UMKM::first();
-            if (!$umkm) {
-                return view('umkm.dashboard', [
-                    'umkm' => null,
-                    'totalProduk' => 0,
-                    'totalPenjualan' => 0,
-                    'totalTransaksi' => 0,
-                    'penjualanBulanan' => collect([]),
-                    'produkTerlaris' => collect([]),
-                    'penjualan' => collect([]),
-                ]);
-            }
-        }
+        $umkm = $user && $user->umkm ? $user->umkm : \App\Models\UMKM::first();
 
-        $totalProduk = $umkm->produks()->count();
-        $totalPenjualan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)->where('status_pembayaran', 'selesai')->sum('total');
-        $totalTransaksi = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)->where('status_pembayaran', 'selesai')->count();
+        // Hitung total produk
+        $totalProduk = $umkm ? $umkm->produk()->count() : 0;
 
+        // Hitung total penjualan (jumlah uang)
+        $totalPenjualan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm ?? 0)
+            ->where('status_pembayaran', 'selesai')
+            ->sum('total');
+
+        // Hitung total transaksi (jumlah transaksi)
+        $totalTransaksi = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm ?? 0)
+            ->where('status_pembayaran', 'selesai')
+            ->count();
+
+        // Ambil daftar tahun dari transaksi UMKM ini
+        $tahunList = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)
+            ->selectRaw('YEAR(tanggal_transaksi) as tahun')
+            ->distinct()
+            ->orderBy('tahun', 'desc')
+            ->pluck('tahun');
+
+        $tahun = $request->input('tahun', now()->year);
+
+        // Penjualan bulanan filter tahun
         $penjualanBulanan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)
             ->where('status_pembayaran', 'selesai')
+            ->whereYear('tanggal_transaksi', $tahun)
             ->selectRaw('DATE_FORMAT(tanggal_transaksi, "%Y-%m") as bulan, SUM(total) as total')
             ->groupBy('bulan')
             ->orderBy('bulan')
@@ -64,6 +69,8 @@ class UMKMUserController extends Controller
             'penjualanBulanan' => $penjualanBulanan,
             'produkTerlaris' => $produkTerlaris,
             'penjualan' => $penjualan,
+            'tahunList' => $tahunList,
+            'tahun' => $tahun,
         ]);
     }
 
@@ -72,7 +79,7 @@ class UMKMUserController extends Controller
         if (auth()->check()) {
             $umkm = UMKM::where('id_user', auth()->id())->first();
             $produks = $umkm ? $umkm->produk : [];
-        } 
+        }
         return view('umkm.produk', compact('produks'));
     }
 

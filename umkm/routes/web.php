@@ -117,3 +117,4 @@ Route::get('register', [RegisteredUserController::class, 'create'])->name('regis
 Route::post('register', [RegisteredUserController::class, 'store']);
 Route::post('/umkm/{id}/transaksi', [UMKMController::class, 'transaksi'])->middleware('auth')->name('umkm.transaksi');
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+Route::middleware('auth')->get('/history', [App\Http\Controllers\HistoryController::class, 'index'])->name('history');

@@ -47,7 +47,7 @@
             <a href="{{ route('register') }}">Belum punya akun? Register</a>
         </div>
         <div class="mt-3 text-center">
-            <a href="{{ url('/') }}" class="btn btn-link">← Kembali ke Dashboard</a>
+            <a href="{{ url('/') }}" class="btn btn-link">← Kembali ke Halaman Utama</a>
         </div>
     </div>
 </div>

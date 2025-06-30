@@ -23,22 +23,25 @@
         <div class="container">
             <a class="navbar-brand" href="#">Kopi Sriwijaya</a>
             <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ml-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
-                    @guest
-                        <li class="nav-item">
-                            <a class="nav-link btn btn-link p-0" href="{{ route('login') }}" style="display:inline;cursor:pointer;">Login</a>
-                        </li>
-                    @else
-                        <li class="nav-item">
-                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" href="{{ url('/') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url('/about') }}">About</a></li>
+                    @auth
+                        <li class="nav-item"><a class="nav-link" href="{{ route('history') }}">History</a></li>
+                    @endauth
+                    @auth
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/profile') }}">Profile</a></li>
+                        <li class="nav-item d-flex align-items-center">
+                            <form action="{{ route('logout') }}" method="POST" class="d-inline m-0 p-0">
                                 @csrf
-                                <button type="submit" class="nav-link btn btn-link p-0" style="display:inline;cursor:pointer;">Logout</button>
+                                <button type="submit" class="btn btn-danger btn-sm" style="padding: 0.25rem 0.75rem;">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
                             </form>
                         </li>
-                    @endguest
+                    @else
+                        <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
+                    @endauth
                 </ul>
             </div>
         </div>

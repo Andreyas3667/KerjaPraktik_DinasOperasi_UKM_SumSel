@@ -4,31 +4,21 @@
 
 @section('content')
 <div class="row mb-3">
-    <div class="col-md-8">
+    <div class="col-md-9">
         {{-- Search Bar --}}
-        <form method="GET" action="{{ route('admin.umkm.index') }}" class="input-group mb-2">
-            <input type="text" id="searchUmkm" name="search" class="form-control" placeholder="Cari nama UMKM, alamat, kontak, atau wilayah..." autocomplete="off">
+        <form method="GET" action="{{ route('admin.umkm.index') }}" class="input-group">
+            <input type="text" id="searchUmkm" name="search" class="form-control" placeholder="Cari nama UMKM, alamat, kontak, atau wilayah..." autocomplete="off" value="{{ request('search') }}">
             <div class="input-group-append">
-                <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i> Cari</button>
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="fas fa-search"></i> Cari
+                </button>
             </div>
         </form>
-        <!-- {{-- Tombol Edit Dropdown --}} -->
-        <div id="editDropdownWrapper" class="mt-2 d-none">
-            <div class="btn-group">
-                <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="editDropdownBtn">
-                    Edit
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#" id="editAction">Edit</a>
-                    <a class="dropdown-item text-danger" href="#" id="deleteAction">Hapus</a>
-                </div>
-            </div>
-        </div>
     </div>
-    <div class="col-md-4 text-right">
+    <div class="col-md-3 d-flex justify-content-end align-items-start">
         {{-- Grouping Wilayah --}}
-        <form method="GET" action="{{ route('admin.umkm.index') }}" class="d-inline">
-            <select name="wilayah" class="form-control d-inline w-auto" onchange="this.form.submit()">
+        <form method="GET" action="{{ route('admin.umkm.index') }}" class="mr-2" style="min-width:150px;">
+            <select name="wilayah" class="form-control" onchange="this.form.submit()">
                 <option value="">Semua Wilayah</option>
                 @foreach($wilayahs as $wilayah)
                     <option value="{{ $wilayah->id_wilayah }}" {{ request('wilayah') == $wilayah->id_wilayah ? 'selected' : '' }}>
@@ -38,7 +28,7 @@
             </select>
         </form>
         {{-- Tombol Daftar --}}
-        <button class="btn btn-primary ml-2" data-toggle="modal" data-target="#modalTambahUMKM">
+        <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target="#modalTambahUMKM">
             <i class="fas fa-plus"></i> Daftar
         </button>
     </div>
@@ -55,12 +45,52 @@
                     <th>Alamat</th>
                     <th>Kontak</th>
                     <th>Wilayah</th>
-                    <th>Deskripsi</th> <!-- Tambahkan ini -->
+                    <th>Deskripsi</th>
                     <th>Menu Kopi/Produk</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @include('admin.umkm.partials.table', ['umkms' => $umkms])
+                @foreach($umkms as $umkm)
+                <tr
+                    data-namapj="{{ $umkm->user->nama ?? '' }}"
+                    data-email="{{ $umkm->user->email ?? '' }}"
+                    data-longitude="{{ $umkm->longitude }}"
+                    data-latitude="{{ $umkm->latitude }}"
+                >
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $umkm->nama_usaha }}</td>
+                    <td>{{ $umkm->alamat }}</td>
+                    <td>{{ $umkm->kontak }}</td>
+                    <td>{{ $umkm->wilayah->nama_wilayah ?? '-' }}</td>
+                    <td>{{ $umkm->deskripsi }}</td>
+                    <td>
+                        <button class="btn btn-info btn-sm show-produk-btn" data-produk='@json($umkm->produk->map(function($p) {
+                            return [
+                                "nama_produk" => $p->nama_produk,
+                                "deskripsi" => $p->deskripsi,
+                                "gambar" => $p->gambar
+                            ];
+                        }))'>
+                            Show
+                        </button>
+                    </td>
+                    <td class="text-right align-middle">
+                        <div class="d-inline-flex align-items-center">
+                            <button class="btn btn-warning btn-sm" title="Edit" onclick="editUmkm({{ $umkm->id_umkm }})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <form action="{{ route('admin.umkm.destroy', $umkm->id_umkm) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus UMKM ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-danger btn-sm ml-2" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
@@ -206,127 +236,6 @@
 
         let selectedUmkmId = null;
 
-        // Reset highlight & hide edit button
-        function resetSelection() {
-            $('#umkmTable tbody tr').removeClass('table-active');
-            $('#editDropdownWrapper').addClass('d-none');
-            selectedUmkmId = null;
-        }
-
-        // Klik baris tabel
-        $('#umkmTable tbody').on('click', 'tr', function() {
-            resetSelection();
-            $(this).addClass('table-active');
-            selectedUmkmId = $(this).data('id');
-            $('#editDropdownWrapper').removeClass('d-none');
-        });
-
-        // Klik di luar tabel, sembunyikan tombol edit
-        $(document).on('click', function(e) {
-            if (!$(e.target).closest('#umkmTable, #editDropdownWrapper').length) {
-                resetSelection();
-            }
-        });
-
-        // Aksi Edit
-        $('#editAction').on('click', function(e) {
-            e.preventDefault();
-            if (selectedUmkmId) {
-                // Ambil data dari baris terpilih
-                let row = $('#umkmTable tbody tr.table-active');
-                let nama = row.data('nama');
-                let alamat = row.data('alamat');
-                let kontak = row.data('kontak');
-                let wilayah = row.data('wilayah');
-                let namapj = row.data('namapj');
-                let email = row.data('email');
-                let deskripsi = row.data('deskripsi');
-                let longitude = row.data('longitude');
-                let latitude = row.data('latitude');
-
-                // Isi form modal
-                $('#modalTambahUMKMLabel').text('Edit UMKM');
-                // Edit action
-                $('#formUmkm').attr('action', '{{ url("admin/umkm") }}/' + selectedUmkmId);
-                if (!$('#formUmkm input[name="_method"]').length) {
-                    $('#formUmkm').append('<input type="hidden" name="_method" value="PUT" id="methodEdit">');
-                }
-                $('#nama').val(namapj);
-                $('#email').val(email);
-                $('#deskripsi').val(deskripsi);
-                $('#nama_usaha').val(nama);
-                $('#alamat').val(alamat);
-                $('#kontak').val(kontak);
-                $('#id_wilayah').val(wilayah).trigger('change');
-                $('#longitude').val(longitude);
-                $('#latitude').val(latitude);
-
-                // Tampilkan modal
-                $('#modalTambahUMKM').modal('show');
-            }
-        });
-
-        // Reset modal saat ditutup
-        $('#modalTambahUMKM').on('hidden.bs.modal', function () {
-            $('#modalTambahUMKMLabel').text('Tambah UMKM');
-            $('#formUmkm').attr('action', '{{ route("admin.umkm.store") }}');
-            $('#methodEdit').remove();
-            $('#formUmkm')[0].reset();
-            $('#id_wilayah').val('').trigger('change');
-        });
-
-        // Aksi Hapus
-        $('#deleteAction').on('click', function(e) {
-            e.preventDefault();
-            if (selectedUmkmId && confirm('Yakin ingin menghapus UMKM ini?')) {
-                // Buat form hapus dinamis
-                let form = $('<form>', {
-                    'method': 'POST',
-                    'action': '{{ url("admin/umkm") }}/' + selectedUmkmId
-                });
-                form.append('@csrf');
-                form.append('<input type="hidden" name="_method" value="DELETE">');
-                $('body').append(form);
-                form.submit();
-            }
-        });
-
-        $(document).on('click', '.show-produk-btn', function() {
-            let produk = $(this).data('produk');
-            let list = '';
-            let storagePath = '{{ asset("storage") }}';
-            if (produk.length) {
-                produk.forEach(function(item) {
-                    list += '<li>';
-                    if (item.gambar) {
-                        list += '<img src="' + storagePath + '/' + item.gambar + '" alt="Foto Produk" width="80"><br>';
-                    }
-                    list += '<strong>' + (item.nama_produk ?? '-') + '</strong><br>';
-                    list += (item.deskripsi ?? '-') + '<br>';
-                    list += '</li>';
-                });
-            } else {
-                list = '<li>Tidak ada produk</li>';
-            }
-            $('#listProduk').html(list);
-            $('#modalShowProduk').modal('show');
-        });
-
-        $('#searchUmkm').on('keyup', function() {
-            let query = $(this).val();
-            $.ajax({
-                url: '{{ route("admin.umkm.search") }}',
-                type: 'GET',
-                data: { search: query },
-                success: function(data) {
-                    $('#umkmTable tbody').html(data);
-                }
-            });
-        });
-
-        $('#kontak').on('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
     });
 
     // Filter wilayah otomatis submit
@@ -395,6 +304,49 @@
             $('#modalTambahUMKM').modal('show');
         }
     });
+
+    // Tambahkan fungsi ini:
+    function editUmkm(id) {
+    // Temukan baris UMKM berdasarkan tombol edit yang diklik
+    let row = $('#umkmTable tbody tr').filter(function() {
+        return $(this).find('button[onclick="editUmkm(' + id + ')"]').length > 0;
+    });
+
+    // Ambil data dari atribut data-
+    let namapj = row.data('namapj') ?? '';
+    let email = row.data('email') ?? '';
+    let longitude = row.data('longitude') ?? '';
+    let latitude = row.data('latitude') ?? '';
+
+    // Ambil data dari kolom tabel
+    let nama = row.find('td').eq(1).text().trim();
+    let alamat = row.find('td').eq(2).text().trim();
+    let kontak = row.find('td').eq(3).text().trim();
+    let wilayah = row.find('td').eq(4).text().trim();
+    let deskripsi = row.find('td').eq(5).text().trim();
+
+    // Set data ke modal/form
+    $('#modalTambahUMKMLabel').text('Edit UMKM');
+    $('#formUmkm').attr('action', '{{ url("admin/umkm") }}/' + id);
+    if (!$('#formUmkm input[name="_method"]').length) {
+        $('#formUmkm').append('<input type="hidden" name="_method" value="PUT" id="methodEdit">');
+    }
+    $('#nama_usaha').val(nama);
+    $('#nama').val(namapj); // <-- ini harus terisi
+    $('#email').val(email); // <-- ini harus terisi
+    $('#alamat').val(alamat);
+    $('#kontak').val(kontak);
+    $('#deskripsi').val(deskripsi);
+    $('#longitude').val(longitude);
+    $('#latitude').val(latitude);
+    // Untuk wilayah, mapping value option sesuai nama
+    $('#id_wilayah option').filter(function() {
+        return $(this).text().trim() === wilayah;
+    }).prop('selected', true);
+    $('#id_wilayah').trigger('change');
+
+    $('#modalTambahUMKM').modal('show');
+}
 
     // Reset modal saat ditutup
     $('#modalTambahUMKM').on('hidden.bs.modal', function () {

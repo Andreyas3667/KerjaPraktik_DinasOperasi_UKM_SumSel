@@ -52,7 +52,7 @@
                 <tr>
                     <td>{{ $item->umkm->nama_usaha ?? '-' }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('Y-m-d') }}</td>
-                    <td>{{ $item->total }}</td>
+                    <td>Rp {{ number_format($item->total, 0, ',', '.') }}</td>
                     <td>
                         @if($item->detail && count($item->detail) > 0)
                             <ul class="mb-0 pl-3">
@@ -75,6 +75,37 @@
         @endif
     </tbody>
 </table>
+
+{{-- filepath: resources/views/admin/dashboard.blade.php --}}
+<div class="card mb-4">
+    <div class="card-header font-weight-bold">
+        Produk Terlaris (Top 3)
+    </div>
+    <ul class="list-group list-group-flush">
+        @forelse($topProdukTerlaris as $produk)
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    @if($produk->gambar)
+                        <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama_produk }}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;margin-right:12px;">
+                    @else
+                        <span class="mr-2" style="width:40px;height:40px;display:inline-block;background:#eee;border-radius:4px;"></span>
+                    @endif
+                    <div>
+                        <div class="font-weight-bold">{{ $produk->nama_produk }}</div>
+                        <small class="text-muted">
+                            {{ $produk->nama_usaha }} &mdash; {{ $produk->nama_wilayah }}
+                        </small>
+                    </div>
+                </div>
+                <span class="badge badge-success badge-pill" style="font-size:1em;">
+                    {{ $produk->jumlah_terjual }} terjual
+                </span>
+            </li>
+        @empty
+            <li class="list-group-item text-muted">Belum ada data produk terlaris.</li>
+        @endforelse
+    </ul>
+</div>
 @stop
 
 @section('css')

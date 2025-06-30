@@ -189,6 +189,13 @@ class UMKMController extends Controller
             foreach ($data['qty'] as $id_produk => $qty) {
                 $produk = $umkm->produk->where('id_produk', $id_produk)->first();
                 if ($produk && $qty > 0) {
+                    if ($qty > $produk->stok) {
+                        \DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Stok produk {$produk->nama_produk} tidak mencukupi!"
+                        ], 422);
+                    }
                     $subtotal = $produk->harga * $qty;
                     DetailTransaksi::create([
                         'id_transaksi' => $trx->id_transaksi,

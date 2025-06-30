@@ -13,15 +13,15 @@
             <th>Deskripsi</th>
             <th>Jumlah</th>
             <th>Harga</th>
-            <th>Gambar</th>
+            <th>Aksi</th>
         </tr>
     </thead>
     <tbody>
         @forelse($produks as $produk)
-        <tr data-id="{{ $produk->id_produk }}">
+        <tr>
             <td class="text-center align-middle">
                 @if($produk->gambar)
-                    <img src="{{ asset('storage/'.$produk->gambar) }}" width="60" class="rounded">
+                    <img src="{{ asset('storage/'.$produk->gambar) }}" width="60" class="rounded img-detail-produk" data-img="{{ asset('storage/'.$produk->gambar) }}" style="cursor:pointer;">
                 @else
                     <span class="text-muted">-</span>
                 @endif
@@ -30,40 +30,18 @@
             <td class="align-middle">{{ $produk->deskripsi }}</td>
             <td class="align-middle">{{ $produk->stok }}</td>
             <td class="align-middle">Rp {{ number_format($produk->harga) }}</td>
-            <td class="align-middle text-center">
-                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#showFotoModal{{ $produk->id_produk }}">
-                    <i class="fas fa-image"></i> Show
-                </button>
-                <!-- Modal Show Foto -->
-                <div class="modal fade" id="showFotoModal{{ $produk->id_produk }}" tabindex="-1" role="dialog" aria-labelledby="showFotoLabel{{ $produk->id_produk }}" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="showFotoLabel{{ $produk->id_produk }}">Foto Produk</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
+            <td class="align-middle">
+                <div class="d-inline-flex align-items-center">
+                    <a href="{{ route('umkm.produk.edit', $produk->id_produk) }}" class="btn btn-warning btn-sm" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <form action="{{ route('umkm.produk.destroy', $produk->id_produk) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus produk ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-danger btn-sm ml-2" title="Hapus">
+                            <i class="fas fa-trash"></i>
                         </button>
-                      </div>
-                      <div class="modal-body text-center">
-                        @if($produk->gambar)
-                            <img src="{{ asset('storage/'.$produk->gambar) }}" class="img-fluid" style="max-width:300px;">
-                        @else
-                            <span class="text-muted">Tidak ada foto</span>
-                        @endif
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- Tombol aksi edit/hapus (dropdown), default: hidden, muncul saat baris aktif -->
-                <div class="aksi-dropdown d-none mt-2">
-                    <div class="btn-group">
-                        <a href="{{ route('umkm.produk.edit', $produk->id_produk) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</a>
-                        <form action="{{ route('umkm.produk.destroy', $produk->id_produk) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus produk ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button>
-                        </form>
-                    </div>
+                    </form>
                 </div>
             </td>
         </tr>
@@ -74,36 +52,27 @@
         @endforelse
     </tbody>
 </table>
+
+<!-- Modal untuk detail gambar -->
+<div class="modal fade" id="modalFotoProduk" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <img src="" id="imgModalProduk" class="img-fluid" style="max-width:400px;">
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @push('js')
 <script>
-    // Saat baris diklik, tampilkan tombol aksi edit/hapus hanya di baris itu
     document.addEventListener('DOMContentLoaded', function() {
-        const rows = document.querySelectorAll('#produkTable tbody tr');
-        rows.forEach(row => {
-            row.addEventListener('click', function() {
-                // Reset semua baris
-                rows.forEach(r => {
-                    r.classList.remove('table-active');
-                    let aksi = r.querySelector('.aksi-dropdown');
-                    if (aksi) aksi.classList.add('d-none');
-                });
-                // Aktifkan baris ini
-                this.classList.add('table-active');
-                let aksi = this.querySelector('.aksi-dropdown');
-                if (aksi) aksi.classList.remove('d-none');
+        document.querySelectorAll('.img-detail-produk').forEach(function(img) {
+            img.addEventListener('click', function() {
+                document.getElementById('imgModalProduk').src = this.dataset.img;
+                $('#modalFotoProduk').modal('show');
             });
-        });
-        // Klik di luar baris, sembunyikan semua aksi
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('#produkTable tbody tr')) {
-                rows.forEach(r => {
-                    r.classList.remove('table-active');
-                    let aksi = r.querySelector('.aksi-dropdown');
-                    if (aksi) aksi.classList.add('d-none');
-                });
-            }
         });
     });
 </script>

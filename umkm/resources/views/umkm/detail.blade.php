@@ -64,7 +64,7 @@
                                     <li>Pilih produk dan jumlah yang ingin dibeli.</li>
                                     <li>Klik tombol <b>Beli via WhatsApp</b>.</li>
                                     <li>Anda akan diarahkan ke WhatsApp dengan format pesanan otomatis.</li>
-                                    <li>Kirim pesan ke penjual dan tunggu konfirmasi dari Admin.</li>
+                                    <li>Kirim pesan ke Admin dan tunggu konfirmasi.</li>
                                     <li>Lakukan pembayaran sesuai instruksi dari Admin.</li>
                                     <li>Pesanan akan diproses setelah pembayaran dikonfirmasi.</li>
                                 </ol>
@@ -145,7 +145,7 @@ function checkoutWA() {
             // Redirect ke halaman history penjualan admin jika perlu
             // window.location.href = '/admin/penjualan'; // opsional
         } else {
-            alert('Gagal menyimpan transaksi!');
+            alert(res.message || 'Gagal menyimpan transaksi!');
         }
     })
     .catch(() => alert('Terjadi kesalahan!'));

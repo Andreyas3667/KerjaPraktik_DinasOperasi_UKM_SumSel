@@ -56,6 +56,38 @@ class DashboardController extends Controller
             ->orderByDesc('tanggal_transaksi')
             ->get();
 
+        // Query produk terlaris
+        $produkTerlaris = DB::table('detail_transaksi')
+            ->join('produk', 'detail_transaksi.id_produk', '=', 'produk.id_produk')
+            ->join('umkm', 'produk.id_umkm', '=', 'umkm.id_umkm')
+            ->join('wilayah', 'umkm.id_wilayah', '=', 'wilayah.id_wilayah')
+            ->select(
+                'produk.nama_produk',
+                'umkm.nama_usaha',
+                'wilayah.nama_wilayah',
+                DB::raw('SUM(detail_transaksi.jumlah) as jumlah_terjual')
+            )
+            ->groupBy('produk.id_produk', 'produk.nama_produk', 'umkm.nama_usaha', 'wilayah.nama_wilayah')
+            ->orderByDesc('jumlah_terjual')
+            ->first();
+
+        // Query Top 3 Produk Terlaris
+        $topProdukTerlaris = DB::table('detail_transaksi')
+            ->join('produk', 'detail_transaksi.id_produk', '=', 'produk.id_produk')
+            ->join('umkm', 'produk.id_umkm', '=', 'umkm.id_umkm')
+            ->join('wilayah', 'umkm.id_wilayah', '=', 'wilayah.id_wilayah')
+            ->select(
+                'produk.nama_produk',
+                'produk.gambar',
+                'umkm.nama_usaha',
+                'wilayah.nama_wilayah',
+                DB::raw('SUM(detail_transaksi.jumlah) as jumlah_terjual')
+            )
+            ->groupBy('produk.id_produk', 'produk.nama_produk', 'produk.gambar', 'umkm.nama_usaha', 'wilayah.nama_wilayah')
+            ->orderByDesc('jumlah_terjual')
+            ->limit(3)
+            ->get();
+
         // Kirim semua variabel ke view
         return view('admin.dashboard', [
             'penjualanBulanan' => $penjualanBulanan,
@@ -65,10 +97,12 @@ class DashboardController extends Controller
             'tahun' => $tahun,
             'tahunList' => $tahunList,
             'penjualan' => $penjualan, // <-- tambahkan ini
+            'produkTerlaris' => $produkTerlaris,
+            'topProdukTerlaris' => $topProdukTerlaris,
         ]);
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         // Ambil daftar tahun dari transaksi
         $tahunList = DB::table('transaksi')
@@ -78,10 +112,28 @@ class DashboardController extends Controller
             ->pluck('tahun');
 
         // Data lain yang ingin dikirim ke view, misal:
-        $tahun = request('tahun', date('Y'));
-        // ...tambahkan data lain sesuai kebutuhan...
+        $tahun = $request->input('tahun', date('Y'));
 
-        return view('admin.dashboard', compact('tahunList', 'tahun'));
+        // Produk terlaris (ambil 1 teratas)
+        $produkTerlaris = DB::table('detail_transaksi')
+            ->join('produk', 'detail_transaksi.id_produk', '=', 'produk.id_produk')
+            ->join('umkm', 'produk.id_umkm', '=', 'umkm.id_umkm')
+            ->join('wilayah', 'umkm.id_wilayah', '=', 'wilayah.id_wilayah')
+            ->select(
+                'produk.nama_produk',
+                'umkm.nama_usaha',
+                'wilayah.nama_wilayah',
+                DB::raw('SUM(detail_transaksi.jumlah) as jumlah_terjual')
+            )
+            ->groupBy('produk.id_produk', 'produk.nama_produk', 'umkm.nama_usaha', 'wilayah.nama_wilayah')
+            ->orderByDesc('jumlah_terjual')
+            ->first();
+
+        return view('admin.dashboard', [
+            'tahunList' => $tahunList,
+            'tahun' => $tahun,
+            'produkTerlaris' => $produkTerlaris,
+        ]);
     }
 
     public function userDashboard()
