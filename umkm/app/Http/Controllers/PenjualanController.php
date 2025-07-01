@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Transaksi;
 use App\Models\Wilayah;
 use PDF; // gunakan barryvdh/laravel-dompdf
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PenjualanExport;
 
 class PenjualanController extends Controller
 {
@@ -127,5 +129,28 @@ class PenjualanController extends Controller
         $trx->save();
 
         return redirect()->back()->with('success', 'Jumlah pesanan berhasil diubah.');
+    }
+    public function exportExcel(Request $request)
+    {
+        $wilayah = $request->wilayah;
+        $tanggal_dari = $request->tanggal_dari;
+        $tanggal_sampai = $request->tanggal_sampai;
+
+        $query = \App\Models\Transaksi::with(['umkm.wilayah', 'detail.produk']);
+        if ($wilayah) {
+            $query->whereHas('umkm', function($q) use ($wilayah) {
+                $q->where('id_wilayah', $wilayah);
+            });
+        }
+        if ($tanggal_dari && $tanggal_sampai) {
+            $query->whereBetween('tanggal_transaksi', [$tanggal_dari, $tanggal_sampai]);
+        } elseif ($tanggal_dari) {
+            $query->whereDate('tanggal_transaksi', '>=', $tanggal_dari);
+        } elseif ($tanggal_sampai) {
+            $query->whereDate('tanggal_transaksi', '<=', $tanggal_sampai);
+        }
+        $transaksis = $query->latest()->get();
+
+        return Excel::download(new PenjualanExport($transaksis), 'penjualan.xlsx');
     }
 }

@@ -174,8 +174,24 @@ class UMKMController extends Controller
         $umkm = \App\Models\UMKM::with('produk')->findOrFail($id);
         $data = $request->validate([
             'qty' => 'required|array',
-            'qty.*' => 'integer|min:1'
+            'qty.*' => 'integer|min:0' // min:0 agar bisa 0
         ]);
+
+        // Pastikan minimal 1 produk qty > 0
+        $adaProduk = false;
+        foreach ($data['qty'] as $qty) {
+            if ($qty > 0) {
+                $adaProduk = true;
+                break;
+            }
+        }
+        if (!$adaProduk) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pilih minimal 1 produk!'
+            ], 422);
+        }
+
         \DB::beginTransaction();
         try {
             $trx = Transaksi::create([

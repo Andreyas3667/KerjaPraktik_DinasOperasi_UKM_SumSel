@@ -47,8 +47,10 @@ class UMKMUserController extends Controller
             ->orderBy('bulan')
             ->pluck('total', 'bulan');
 
-        $produkTerlaris = \App\Models\DetailTransaksi::whereHas('transaksi', function($q) use ($umkm) {
-                $q->where('id_umkm', $umkm->id_umkm)->where('status_pembayaran', 'selesai');
+        $produkTerlaris = \App\Models\DetailTransaksi::whereHas('transaksi', function($q) use ($umkm, $tahun) {
+                $q->where('id_umkm', $umkm->id_umkm)
+                  ->where('status_pembayaran', 'selesai')
+                  ->whereYear('tanggal_transaksi', $tahun);
             })
             ->join('produk', 'detail_transaksi.id_produk', '=', 'produk.id_produk')
             ->select('produk.nama_produk', 'produk.gambar', \DB::raw('SUM(detail_transaksi.jumlah) as jumlah_terjual'))
@@ -59,6 +61,7 @@ class UMKMUserController extends Controller
 
         $penjualan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)
             ->where('status_pembayaran', 'selesai')
+            ->whereYear('tanggal_transaksi', $tahun)
             ->get();
 
         return view('umkm.dashboard', [

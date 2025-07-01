@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\UMKMApiController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\PenjualanExportController;
 
 // ===================
 // Dashboard Umum/User
@@ -50,6 +51,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
         Route::put('{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
         Route::post('/admin/penjualan/{id}/batal', [\App\Http\Controllers\PenjualanController::class, 'batal'])->name('penjualan.batal');
         Route::post('/admin/penjualan/{detail}/edit-jumlah', [\App\Http\Controllers\PenjualanController::class, 'editJumlah'])->name('penjualan.editJumlah');
+        Route::get('/admin/penjualan/export-excel', [PenjualanExportController::class, 'export'])->name('penjualan.exportExcel');
     });
 });
 

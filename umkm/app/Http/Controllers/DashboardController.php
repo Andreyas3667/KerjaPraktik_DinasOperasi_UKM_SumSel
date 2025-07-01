@@ -73,9 +73,12 @@ class DashboardController extends Controller
 
         // Query Top 3 Produk Terlaris
         $topProdukTerlaris = DB::table('detail_transaksi')
+            ->join('transaksi', 'detail_transaksi.id_transaksi', '=', 'transaksi.id_transaksi')
             ->join('produk', 'detail_transaksi.id_produk', '=', 'produk.id_produk')
             ->join('umkm', 'produk.id_umkm', '=', 'umkm.id_umkm')
             ->join('wilayah', 'umkm.id_wilayah', '=', 'wilayah.id_wilayah')
+            ->whereYear('transaksi.tanggal_transaksi', $tahun)
+            ->where('transaksi.status_pembayaran', 'selesai')
             ->select(
                 'produk.nama_produk',
                 'produk.gambar',

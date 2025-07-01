@@ -24,6 +24,9 @@
         <a href="{{ route('penjualan.export', ['wilayah' => $wilayah, 'tanggal_dari' => request('tanggal_dari'), 'tanggal_sampai' => request('tanggal_sampai')]) }}" class="btn btn-danger ml-2" target="_blank">
             <i class="fas fa-file-pdf"></i> Export PDF
         </a>
+        <a href="{{ route('penjualan.exportExcel', request()->all()) }}" class="btn btn-success ml-2" target="_blank">
+            <i class="fas fa-file-excel"></i> Export Excel
+        </a>
     </form>
 </div>
 <div class="card">
@@ -56,7 +59,34 @@
             @endif
             <td>{{ $detail->produk->nama_produk ?? '-' }}</td>
             <td>{{ number_format($detail->harga_satuan) }}</td>
-            <td>{{ $detail->jumlah }}</td>
+            <td>
+                {{ $detail->jumlah }}
+                @if($trx->status_pembayaran == 'pending')
+                    <button class="btn btn-sm btn-warning ml-2" data-toggle="modal" data-target="#editJumlahModal{{ $detail->id_detail }}" title="Edit Jumlah">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                    <!-- Modal Edit Jumlah -->
+                    <div class="modal fade" id="editJumlahModal{{ $detail->id_detail }}" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <form action="{{ route('penjualan.editJumlah', $detail->id_detail) }}" method="POST">
+                                @csrf
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Edit Jumlah Pesanan</h5>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="number" name="jumlah" class="form-control" value="{{ $detail->jumlah }}" min="1" required>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Simpan</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                @endif
+            </td>
             <td>{{ number_format($detail->jumlah * $detail->harga_satuan) }}</td>
             @if($i == 0)
                 <td rowspan="{{ $trx->detail->count() }}">{{ $trx->user->nama ?? '-' }}</td>
@@ -79,34 +109,6 @@
                     @elseif($trx->status_pembayaran == 'batal')
                         <span class="badge badge-danger">Dibatalkan</span>
                     @endif
-                    {{-- Tombol Edit Jumlah untuk setiap detail --}}
-                    @foreach($trx->detail as $d)
-                        @if($trx->status_pembayaran == 'pending')
-                            <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editJumlahModal{{ $d->id_detail }}" title="Edit Jumlah">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
-                            <!-- Modal Edit Jumlah -->
-                            <div class="modal fade" id="editJumlahModal{{ $d->id_detail }}" tabindex="-1" role="dialog">
-                                <div class="modal-dialog" role="document">
-                                    <form action="{{ route('penjualan.editJumlah', $d->id_detail) }}" method="POST">
-                                        @csrf
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Edit Jumlah Pesanan</h5>
-                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <input type="number" name="jumlah" class="form-control" value="{{ $d->jumlah }}" min="1" required>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary">Simpan</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
                 </td>
             @endif
         </tr>

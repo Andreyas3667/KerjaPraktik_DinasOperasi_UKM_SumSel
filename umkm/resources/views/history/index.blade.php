@@ -12,6 +12,7 @@
                 <th>Harga Satuan</th>
                 <th>Jumlah</th>
                 <th>Total</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -24,11 +25,22 @@
                     <td>Rp {{ number_format($detail->harga_satuan) }}</td>
                     <td>{{ $detail->jumlah }}</td>
                     <td>Rp {{ number_format($detail->jumlah * $detail->harga_satuan) }}</td>
+                    <td>
+                        @if($trx->status_pembayaran == 'selesai')
+                            <span class="badge badge-success">Sukses</span>
+                        @elseif($trx->status_pembayaran == 'pending')
+                            <span class="badge badge-warning">Pending</span>
+                        @elseif($trx->status_pembayaran == 'batal')
+                            <span class="badge badge-danger">Batal</span>
+                        @else
+                            <span class="badge badge-secondary">{{ $trx->status_pembayaran }}</span>
+                        @endif
+                    </td>
                 </tr>
                 @endforeach
             @empty
                 <tr>
-                    <td colspan="6" class="text-center">Belum ada riwayat pemesanan.</td>
+                    <td colspan="7" class="text-center">Tidak ada data</td>
                 </tr>
             @endforelse
         </tbody>
