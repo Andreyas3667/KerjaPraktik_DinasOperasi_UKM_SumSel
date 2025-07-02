@@ -66,30 +66,24 @@
 </div>
 
 <div class="card mt-4">
-    <div class="card-header">Daftar Penjualan</div>
+    <div class="card-header">Total Produk Terjual ({{ $tahun }})</div>
     <div class="card-body">
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Produk</th>
-                    <th>Jumlah</th>
-                    <th>Harga Satuan</th>
-                    <th>Total</th>
+                    <th>Total Terjual</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($penjualan as $trx)
-                    @foreach($trx->detail as $detail)
-                        <tr>
-                            <td>{{ $detail->produk->nama_produk ?? '-' }}</td>
-                            <td>{{ $detail->jumlah }}</td>
-                            <td>Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
-                            <td>Rp {{ number_format($detail->jumlah * $detail->harga_satuan, 0, ',', '.') }}</td>
-                        </tr>
-                    @endforeach
+                @forelse($produkTerjual as $produk)
+                    <tr>
+                        <td>{{ $produk->nama_produk }}</td>
+                        <td>{{ $produk->total_terjual }}</td>
+                    </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="text-center">Tidak ada data penjualan.</td>
+                        <td colspan="2" class="text-center">Tidak ada data penjualan.</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -16,17 +16,18 @@ class UMKMUserController extends Controller
         $user = auth()->user();
         $umkm = $user && $user->umkm ? $user->umkm : \App\Models\UMKM::first();
 
-        // Hitung total produk
-        $totalProduk = $umkm ? $umkm->produk()->count() : 0;
+        $tahun = $request->input('tahun', now()->year);
 
-        // Hitung total penjualan (jumlah uang)
+        $totalProduk = $umkm ? $umkm->produk()->whereYear('created_at', $tahun)->count() : 0;
+
         $totalPenjualan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm ?? 0)
             ->where('status_pembayaran', 'selesai')
+            ->whereYear('tanggal_transaksi', $tahun)
             ->sum('total');
 
-        // Hitung total transaksi (jumlah transaksi)
         $totalTransaksi = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm ?? 0)
             ->where('status_pembayaran', 'selesai')
+            ->whereYear('tanggal_transaksi', $tahun)
             ->count();
 
         // Ambil daftar tahun dari transaksi UMKM ini
@@ -35,8 +36,6 @@ class UMKMUserController extends Controller
             ->distinct()
             ->orderBy('tahun', 'desc')
             ->pluck('tahun');
-
-        $tahun = $request->input('tahun', now()->year);
 
         // Penjualan bulanan filter tahun
         $penjualanBulanan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)
@@ -59,6 +58,16 @@ class UMKMUserController extends Controller
             ->limit(5)
             ->get();
 
+        $produkTerjual = \App\Models\DetailTransaksi::whereHas('transaksi', function($q) use ($umkm, $tahun) {
+                $q->where('id_umkm', $umkm->id_umkm)
+                  ->where('status_pembayaran', 'selesai')
+                  ->whereYear('tanggal_transaksi', $tahun);
+            })
+            ->join('produk', 'detail_transaksi.id_produk', '=', 'produk.id_produk')
+            ->select('produk.nama_produk', \DB::raw('SUM(detail_transaksi.jumlah) as total_terjual'))
+            ->groupBy('produk.id_produk', 'produk.nama_produk')
+            ->get();
+
         $penjualan = \App\Models\Transaksi::where('id_umkm', $umkm->id_umkm)
             ->where('status_pembayaran', 'selesai')
             ->whereYear('tanggal_transaksi', $tahun)
@@ -74,6 +83,7 @@ class UMKMUserController extends Controller
             'penjualan' => $penjualan,
             'tahunList' => $tahunList,
             'tahun' => $tahun,
+            'produkTerjual' => $produkTerjual,
         ]);
     }
 
@@ -93,12 +103,22 @@ class UMKMUserController extends Controller
         } else {
             $umkm = UMKM::first();
         }
-        $transaksis = $umkm
-            ? Transaksi::with('detail.produk')
-                ->where('id_umkm', $umkm->id_umkm)
-                ->where('status_pembayaran', 'selesai') // hanya yang sudah dikonfirmasi
-                ->get()
-            : collect();
+        $tanggal_dari = $request->input('tanggal_dari');
+        $tanggal_sampai = $request->input('tanggal_sampai');
+
+        $query = \App\Models\Transaksi::with('detail.produk')
+            ->where('id_umkm', $umkm->id_umkm)
+            ->where('status_pembayaran', 'selesai');
+
+        if ($tanggal_dari && $tanggal_sampai) {
+            $query->whereBetween('tanggal_transaksi', [$tanggal_dari, $tanggal_sampai]);
+        } elseif ($tanggal_dari) {
+            $query->whereDate('tanggal_transaksi', '>=', $tanggal_dari);
+        } elseif ($tanggal_sampai) {
+            $query->whereDate('tanggal_transaksi', '<=', $tanggal_sampai);
+        }
+
+        $transaksis = $query->get();
 
         // Grouping penjualan per bulan
         $dataPenjualanBulanan = $transaksis->filter(function($item) {
@@ -165,5 +185,60 @@ class UMKMUserController extends Controller
             $umkm->save();
         }
         return redirect()->route('umkm.profile')->with('success', 'Profil berhasil diperbarui');
+    }
+    public function exportExcel(Request $request)
+    {
+        if (auth()->check()) {
+            $umkm = \App\Models\UMKM::where('id_user', auth()->id())->first();
+        } else {
+            $umkm = \App\Models\UMKM::first();
+        }
+        $tanggal_dari = $request->input('tanggal_dari');
+        $tanggal_sampai = $request->input('tanggal_sampai');
+
+        $query = \App\Models\Transaksi::with('detail.produk')
+            ->where('id_umkm', $umkm->id_umkm)
+            ->where('status_pembayaran', 'selesai');
+
+        if ($tanggal_dari && $tanggal_sampai) {
+            $query->whereBetween('tanggal_transaksi', [$tanggal_dari, $tanggal_sampai]);
+        } elseif ($tanggal_dari) {
+            $query->whereDate('tanggal_transaksi', '>=', $tanggal_dari);
+        } elseif ($tanggal_sampai) {
+            $query->whereDate('tanggal_transaksi', '<=', $tanggal_sampai);
+        }
+
+        $transaksis = $query->get();
+
+        // Gunakan PhpSpreadsheet untuk export Excel
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->fromArray([
+            ['Tanggal', 'Produk', 'Harga', 'Jumlah', 'Total']
+        ], null, 'A1');
+
+        $row = 2;
+        foreach ($transaksis as $trx) {
+            foreach ($trx->detail as $detail) {
+                $sheet->fromArray([
+                    $trx->tanggal_transaksi,
+                    $detail->produk->nama_produk ?? '-',
+                    $detail->harga_satuan,
+                    $detail->jumlah,
+                    $detail->jumlah * $detail->harga_satuan,
+                ], null, 'A' . $row);
+                $row++;
+            }
+        }
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $filename = 'laporan-penjualan.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'max-age=0',
+        ]);
     }
 }

@@ -16,6 +16,7 @@
     <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
     <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('umkm/assets/css/main.css') }}">
+    @stack('css')
 </head>
 <body>
     <!-- Navbar -->
@@ -110,6 +111,7 @@
     <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
     <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
     <script src="{{ asset('umkm/assets/js/main.js') }}"></script>
+    @stack('js')
     <script>
         // Hilangkan preloader setelah halaman selesai dimuat
         window.addEventListener('load', function() {

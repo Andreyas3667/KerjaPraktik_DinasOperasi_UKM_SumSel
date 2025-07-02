@@ -70,6 +70,7 @@ Route::prefix('umkm')->middleware(['auth', 'role:umkm'])->group(function () {
     Route::get('/laporan/export', [UMKMUserController::class, 'exportPdf'])->name('umkm.laporan.export');
     Route::get('/profile', [UMKMUserController::class, 'profile'])->name('umkm.profile');
     Route::post('/profile/update', [UMKMUserController::class, 'updateProfile'])->name('umkm.profile.update');
+    Route::get('/umkm/laporan/export-excel', [UMKMUserController::class, 'exportExcel'])->name('umkm.laporan.exportExcel');
 });
 
 // ===================

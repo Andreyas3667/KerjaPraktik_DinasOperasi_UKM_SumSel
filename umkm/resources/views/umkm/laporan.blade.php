@@ -4,9 +4,20 @@
 
 @section('content')
 <h3>Laporan Penjualan</h3>
-<a href="{{ route('umkm.laporan.export') }}" class="btn btn-danger mb-3">
-    <i class="fas fa-file-pdf"></i> Export PDF
-</a>
+
+<form method="GET" class="form-inline mb-3">
+    <label for="tanggal_dari" class="mr-2">Dari:</label>
+    <input type="date" name="tanggal_dari" id="tanggal_dari" class="form-control mr-2" value="{{ request('tanggal_dari') }}">
+    <label for="tanggal_sampai" class="mr-2">Sampai:</label>
+    <input type="date" name="tanggal_sampai" id="tanggal_sampai" class="form-control mr-2" value="{{ request('tanggal_sampai') }}">
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a href="{{ route('umkm.laporan.export', request()->all()) }}" class="btn btn-danger ml-2" target="_blank">
+        <i class="fas fa-file-pdf"></i> Export PDF
+    </a>
+    <a href="{{ route('umkm.laporan.exportExcel', request()->all()) }}" class="btn btn-success ml-2" target="_blank">
+        <i class="fas fa-file-excel"></i> Export Excel
+    </a>
+</form>
 
 @if($transaksis->count() > 0)
     <canvas id="grafikPenjualan" height="100"></canvas>

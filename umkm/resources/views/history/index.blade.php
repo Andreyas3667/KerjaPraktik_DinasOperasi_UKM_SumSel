@@ -47,3 +47,32 @@
     </table>
 </div>
 @endsection
+
+@push('css')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+@endpush
+
+@push('js')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.table').DataTable({
+        "pageLength": 10,
+        "lengthChange": false,
+        "ordering": true,
+        "order": [[0, "desc"]],
+        "language": {
+            "paginate": {
+                "previous": "Sebelumnya",
+                "next": "Berikutnya"
+            },
+            "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            "infoEmpty": "Tidak ada data",
+            "zeroRecords": "Tidak ditemukan data",
+            "search": "Cari:"
+        }
+    });
+});
+</script>
+@endpush
