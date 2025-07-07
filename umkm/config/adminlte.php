@@ -318,13 +318,6 @@ return [
             'url' => 'admin/penjualan',
             'icon' => 'fas fa-fw fa-chart-line',
         ],
-        [
-            'text' => 'Logout',
-            'url'  => 'logout',
-            'icon' => 'fas fa-fw fa-sign-out-alt',
-            'method' => 'post',
-        ],
-
     ],
 
     /*
