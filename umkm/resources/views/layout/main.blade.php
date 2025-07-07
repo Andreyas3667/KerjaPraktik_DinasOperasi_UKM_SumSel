@@ -23,13 +23,16 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="#">Kopi Sriwijaya</a>
-            <div class="collapse navbar-collapse">
+            <!-- Tombol hamburger untuk mobile -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Menu utama -->
+            <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item"><a class="nav-link" href="{{ url('/') }}">Home</a></li>
                     @auth
                         <li class="nav-item"><a class="nav-link" href="{{ route('history') }}">History</a></li>
-                    @endauth
-                    @auth
                         <li class="nav-item"><a class="nav-link" href="{{ url('/profile') }}">Profile</a></li>
                         <li class="nav-item d-flex align-items-center">
                             <form action="{{ route('logout') }}" method="POST" class="d-inline m-0 p-0">
