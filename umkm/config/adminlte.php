@@ -319,11 +319,6 @@ return [
             'icon' => 'fas fa-fw fa-chart-line',
         ],
         [
-            'text' => 'Tambah Admin',
-            'icon' => 'fas fa-fw fa-users-cog',
-            'url'  => 'admin/admin-wilayah',
-        ],
-        [
             'text' => 'Logout',
             'url'  => 'logout',
             'icon' => 'fas fa-fw fa-sign-out-alt',

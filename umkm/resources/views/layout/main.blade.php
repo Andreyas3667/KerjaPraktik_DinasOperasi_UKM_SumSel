@@ -26,7 +26,6 @@
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item"><a class="nav-link" href="{{ url('/') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url('/about') }}">About</a></li>
                     @auth
                         <li class="nav-item"><a class="nav-link" href="{{ route('history') }}">History</a></li>
                     @endauth
@@ -67,14 +66,6 @@
             </div>
           </div>
           <div class="col-lg-4 col-md-12">
-            <h4>Follow Us</h4>
-            <p>Follow social media for updates and further information</p>
-            <div class="social-links d-flex">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href="https://www.instagram.com/kopi.sriwijaya?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
           </div>
           <div class="col-lg-4 col-md-18">
             <a href="https://diskopukm.sumselprov.go.id/"><span class="sitename"><h3>Tentang Kami</h3> </span></a>
