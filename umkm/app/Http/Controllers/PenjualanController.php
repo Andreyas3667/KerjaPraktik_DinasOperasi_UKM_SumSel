@@ -76,7 +76,12 @@ class PenjualanController extends Controller
         }
         $transaksis = $query->latest()->get();
 
-        $pdf = PDF::loadView('admin.penjualan.pdf', compact('transaksis', 'wilayah'));
+        $pdf = PDF::loadView('admin.penjualan.pdf', [
+            'transaksis' => $transaksis,
+            'wilayah' => $wilayah,
+            'tanggal_dari' => $tanggal_dari,
+            'tanggal_sampai' => $tanggal_sampai
+        ]);
         return $pdf->download('laporan-penjualan.pdf');
     }
     public function verifikasi(Request $request, $id)

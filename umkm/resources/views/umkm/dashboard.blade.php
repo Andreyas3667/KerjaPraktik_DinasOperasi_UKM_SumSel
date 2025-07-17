@@ -3,8 +3,7 @@
 @section('title', 'Dashboard UMKM')
 
 @section('content')
-<h3>Selamat Datang di {{ $umkm->nama_usaha ?? 'Dashboard UMKM' }}</h3>
-<p>Kelola produk, laporan penjualan, dan profil UMKM Anda di sini.</p>
+<h3>Welcome, {{ $umkm->nama_usaha ?? 'Dashboard UMKM' }}</h3>
 
 <form method="GET" class="form-inline mb-3">
     <label for="tahun" class="mr-2">Tahun:</label>

@@ -9,6 +9,31 @@
 </head>
 <body>
     <h2>Laporan Penjualan {{ $wilayah ? 'Wilayah: '.$transaksis->first()->umkm->wilayah->nama_wilayah ?? '' : 'Semua Wilayah' }}</h2>
+    @if($tanggal_dari || $tanggal_sampai)
+        <p>
+            <strong>Periode:</strong>
+            @if($tanggal_dari && $tanggal_sampai)
+                {{ \Carbon\Carbon::parse($tanggal_dari)->format('d-m-Y') }}
+                s/d
+                {{ \Carbon\Carbon::parse($tanggal_sampai)->format('d-m-Y') }}
+                <br>
+                <strong>Bulan:</strong>
+                {{ \Carbon\Carbon::parse($tanggal_dari)->translatedFormat('F Y') }}
+                -
+                {{ \Carbon\Carbon::parse($tanggal_sampai)->translatedFormat('F Y') }}
+            @elseif($tanggal_dari)
+                Mulai {{ \Carbon\Carbon::parse($tanggal_dari)->format('d-m-Y') }}
+                <br>
+                <strong>Bulan:</strong>
+                {{ \Carbon\Carbon::parse($tanggal_dari)->translatedFormat('F Y') }}
+            @elseif($tanggal_sampai)
+                Sampai {{ \Carbon\Carbon::parse($tanggal_sampai)->format('d-m-Y') }}
+                <br>
+                <strong>Bulan:</strong>
+                {{ \Carbon\Carbon::parse($tanggal_sampai)->translatedFormat('F Y') }}
+            @endif
+        </p>
+    @endif
     <table>
         <thead>
             <tr>

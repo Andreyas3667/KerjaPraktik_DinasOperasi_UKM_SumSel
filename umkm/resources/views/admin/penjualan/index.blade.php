@@ -94,12 +94,12 @@
                 <td rowspan="{{ $trx->detail->count() }}">
                     {{-- Aksi --}}
                     @if($trx->status_pembayaran == 'pending')
-                        <form action="{{ route('penjualan.verifikasi', $trx->id_transaksi) }}" method="POST" style="display:inline;" onsubmit="return confirm('Konfirmasi pesanan?');">
+                        <form action="{{ route('penjualan.verifikasi', $trx->id_transaksi) }}" method="POST" style="display:inline;" onsubmit="return confirm('Konfirmasi pemesanan produk ini? (pesanan yang dipesan pembeli/pelanggan)');">
                             @csrf
                             <input type="hidden" name="status" value="selesai">
                             <button class="btn btn-success btn-sm" title="Konfirmasi"><i class="fas fa-check"></i></button>
                         </form>
-                        <form action="{{ route('penjualan.batal', $trx->id_transaksi) }}" method="POST" style="display:inline;" onsubmit="return confirm('Batalkan pesanan?');">
+                        <form action="{{ route('penjualan.batal', $trx->id_transaksi) }}" method="POST" style="display:inline;" onsubmit="return confirm('Batalkan pemesanan produk ini? (pesanan yang dipesan pembeli/pelanggan)');">
                             @csrf
                             <input type="hidden" name="status" value="batal">
                             <button class="btn btn-danger btn-sm" title="Batalkan"><i class="fas fa-times"></i></button>
