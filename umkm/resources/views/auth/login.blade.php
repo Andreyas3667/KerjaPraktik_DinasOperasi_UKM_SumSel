@@ -49,6 +49,12 @@
         <div class="mt-3 text-center">
             <a href="{{ url('/') }}" class="btn btn-link">← Kembali ke Halaman Utama</a>
         </div>
+        <div class="mt-3">
+            <a href="{{ route('auth.google') }}" class="btn btn-danger" style="width:100%">
+                <img src="https://developers.google.com/identity/images/g-logo.png" style="width:20px; margin-right:8px;">
+                Login/Daftar dengan Google
+            </a>
+        </div>
     </div>
 </div>
 @endsection
