@@ -36,8 +36,10 @@ class PenjualanController extends Controller
         $wilayah = $request->wilayah;
         $tanggal_dari = $request->tanggal_dari;
         $tanggal_sampai = $request->tanggal_sampai;
+        $search = $request->search;
 
-        $query = \App\Models\Transaksi::with(['umkm.wilayah', 'detail.produk']);
+        $query = \App\Models\Transaksi::with(['umkm.wilayah', 'detail.produk', 'user']);
+
         if ($wilayah) {
             $query->whereHas('umkm', function($q) use ($wilayah) {
                 $q->where('id_wilayah', $wilayah);
@@ -50,9 +52,29 @@ class PenjualanController extends Controller
         } elseif ($tanggal_sampai) {
             $query->whereDate('tanggal_transaksi', '<=', $tanggal_sampai);
         }
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->whereHas('umkm', function($q2) use ($search) {
+                    $q2->where('nama_usaha', 'like', "%$search%")
+                       ->orWhere('alamat', 'like', "%$search%");
+                })
+                ->orWhereHas('detail.produk', function($q3) use ($search) {
+                    $q3->where('nama_produk', 'like', "%$search%");
+                })
+                ->orWhereHas('user', function($q4) use ($search) {
+                    $q4->where('nama', 'like', "%$search%")
+                       ->orWhere('alamat', 'like', "%$search%");
+                })
+                ->orWhereHas('umkm.wilayah', function($q5) use ($search) {
+                    $q5->where('nama_wilayah', 'like', "%$search%");
+                })
+                ->orWhere('tanggal_transaksi', 'like', "%$search%");
+            });
+        }
+
         $transaksis = $query->latest()->get();
 
-        return view('admin.penjualan.index', compact('transaksis', 'wilayahs', 'wilayah', 'tanggal_dari', 'tanggal_sampai'));
+        return view('admin.penjualan.index', compact('transaksis', 'wilayahs', 'wilayah', 'tanggal_dari', 'tanggal_sampai', 'search'));
     }
 
     public function exportPdf(Request $request)
@@ -141,7 +163,7 @@ class PenjualanController extends Controller
         $tanggal_dari = $request->tanggal_dari;
         $tanggal_sampai = $request->tanggal_sampai;
 
-        $query = \App\Models\Transaksi::with(['umkm.wilayah', 'detail.produk']);
+        $query = \App\Models\Transaksi::with(['umkm.wilayah', 'detail.produk', 'user']);
         if ($wilayah) {
             $query->whereHas('umkm', function($q) use ($wilayah) {
                 $q->where('id_wilayah', $wilayah);

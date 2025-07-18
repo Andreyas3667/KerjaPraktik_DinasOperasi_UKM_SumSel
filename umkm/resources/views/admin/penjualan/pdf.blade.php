@@ -8,7 +8,18 @@
     </style>
 </head>
 <body>
-    <h2>Laporan Penjualan {{ $wilayah ? 'Wilayah: '.$transaksis->first()->umkm->wilayah->nama_wilayah ?? '' : 'Semua Wilayah' }}</h2>
+    <h2>
+        Laporan Penjualan
+        @if($wilayah)
+            @if($transaksis->count() > 0 && $transaksis->first()->umkm && $transaksis->first()->umkm->wilayah)
+                Wilayah: {{ $transaksis->first()->umkm->wilayah->nama_wilayah }}
+            @else
+                Wilayah: (Tidak ada data)
+            @endif
+        @else
+            Semua Wilayah
+        @endif
+    </h2>
     @if($tanggal_dari || $tanggal_sampai)
         <p>
             <strong>Periode:</strong>

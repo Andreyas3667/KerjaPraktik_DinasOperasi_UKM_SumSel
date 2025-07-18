@@ -20,6 +20,7 @@
         <input type="date" name="tanggal_dari" id="tanggal_dari" class="form-control mr-2" value="{{ request('tanggal_dari') }}">
         <label for="tanggal_sampai" class="mr-2">Sampai:</label>
         <input type="date" name="tanggal_sampai" id="tanggal_sampai" class="form-control mr-2" value="{{ request('tanggal_sampai') }}">
+        <input type="text" name="search" class="form-control mr-2" placeholder="Cari UMKM/Produk/Pembeli/Alamat/Wilayah/Tanggal" value="{{ request('search') }}">
         <button type="submit" class="btn btn-primary">Filter</button>
         <a href="{{ route('penjualan.export', ['wilayah' => $wilayah, 'tanggal_dari' => request('tanggal_dari'), 'tanggal_sampai' => request('tanggal_sampai')]) }}" class="btn btn-danger ml-2" target="_blank">
             <i class="fas fa-file-pdf"></i> Export PDF
