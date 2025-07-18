@@ -43,7 +43,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
         Route::get('history', [PenjualanController::class, 'history'])->name('penjualan.history');
         Route::get('laporan', [PenjualanController::class, 'laporan'])->name('penjualan.laporan');
         Route::get('/', [PenjualanController::class, 'index'])->name('penjualan.index');
-        Route::get('export', [PenjualanController::class, 'exportPdf'])->name('penjualan.export');
+        Route::get('export', [PenjualanController::class, 'exportPdf'])->name('penjualan.exportPdf');
+        Route::get('export-excel', [PenjualanController::class, 'exportExcel'])->name('penjualan.exportExcel');
         Route::post('verifikasi/{id}', [PenjualanController::class, 'verifikasi'])->name('penjualan.verifikasi');
         Route::delete('{id}', [PenjualanController::class, 'destroy'])->name('penjualan.destroy');
         Route::get('{id}', [PenjualanController::class, 'show'])->name('penjualan.show');
@@ -51,7 +52,6 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
         Route::put('{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
         Route::post('/admin/penjualan/{id}/batal', [\App\Http\Controllers\PenjualanController::class, 'batal'])->name('penjualan.batal');
         Route::post('/admin/penjualan/{detail}/edit-jumlah', [\App\Http\Controllers\PenjualanController::class, 'editJumlah'])->name('penjualan.editJumlah');
-        Route::get('/admin/penjualan/export-excel', [PenjualanExportController::class, 'export'])->name('penjualan.exportExcel');
     });
 });
 

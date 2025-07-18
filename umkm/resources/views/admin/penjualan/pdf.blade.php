@@ -8,41 +8,22 @@
     </style>
 </head>
 <body>
-    <h2>
-        Laporan Penjualan
-        @if($wilayah)
-            @if($transaksis->count() > 0 && $transaksis->first()->umkm && $transaksis->first()->umkm->wilayah)
-                Wilayah: {{ $transaksis->first()->umkm->wilayah->nama_wilayah }}
-            @else
-                Wilayah: (Tidak ada data)
-            @endif
-        @else
-            Semua Wilayah
-        @endif
-    </h2>
-    @if($tanggal_dari || $tanggal_sampai)
+    <h2>Laporan Penjualan</h2>
+    @if($umkmNama)
+        <p><strong>UMKM:</strong> {{ $umkmNama }}</p>
+    @endif
+    @if($wilayahNama)
+        <p><strong>Wilayah:</strong> {{ $wilayahNama }}</p>
+    @endif
+    @if($tanggalMin && $tanggalMax)
         <p>
             <strong>Periode:</strong>
-            @if($tanggal_dari && $tanggal_sampai)
-                {{ \Carbon\Carbon::parse($tanggal_dari)->format('d-m-Y') }}
-                s/d
-                {{ \Carbon\Carbon::parse($tanggal_sampai)->format('d-m-Y') }}
-                <br>
-                <strong>Bulan:</strong>
-                {{ \Carbon\Carbon::parse($tanggal_dari)->translatedFormat('F Y') }}
-                -
-                {{ \Carbon\Carbon::parse($tanggal_sampai)->translatedFormat('F Y') }}
-            @elseif($tanggal_dari)
-                Mulai {{ \Carbon\Carbon::parse($tanggal_dari)->format('d-m-Y') }}
-                <br>
-                <strong>Bulan:</strong>
-                {{ \Carbon\Carbon::parse($tanggal_dari)->translatedFormat('F Y') }}
-            @elseif($tanggal_sampai)
-                Sampai {{ \Carbon\Carbon::parse($tanggal_sampai)->format('d-m-Y') }}
-                <br>
-                <strong>Bulan:</strong>
-                {{ \Carbon\Carbon::parse($tanggal_sampai)->translatedFormat('F Y') }}
-            @endif
+            {{ \Carbon\Carbon::parse($tanggalMin)->format('d-m-Y') }}
+            s/d
+            {{ \Carbon\Carbon::parse($tanggalMax)->format('d-m-Y') }}
+            <br>
+            <strong>Bulan:</strong>
+            {{ $bulanMin }} - {{ $bulanMax }}
         </p>
     @endif
     <table>

@@ -115,12 +115,27 @@ function checkoutWA() {
         alert('Pilih minimal 1 produk!');
         return;
     }
-    pesan += "Total: Rp" + total.toLocaleString('id-ID');
+    pesan += "Total: Rp" + total.toLocaleString('id-ID') + "%0A";
 
+    // Data tambahan
     let userNama = "{{ auth()->user()->nama ?? '' }}";
     let userTelp = "{{ auth()->user()->telepon ?? '' }}";
     let userAlamat = "{{ auth()->user()->alamat ?? '' }}";
-    pesan = `Nama: ${userNama}%0ATelepon: ${userTelp}%0AAlamat: ${userAlamat}%0A` + pesan;
+    let wilayah = "{{ $umkm->wilayah->nama_wilayah ?? '-' }}";
+    let tanggal = "{{ \Carbon\Carbon::now()->format('d-m-Y H:i') }}";
+    let namaUmkm = "{{ $umkm->nama_usaha }}";
+
+    // Reminder
+    let reminder = "%0A*Catatan:* Harga belum termasuk biaya pengiriman. Silakan konfirmasi ongkir dengan admin sebelum pembayaran.";
+
+    // Gabungkan pesan
+    pesan =
+        `Nama: ${userNama}%0ATelepon: ${userTelp}%0AAlamat: ${userAlamat}%0A` +
+        `Wilayah: ${wilayah}%0A` +
+        `Tanggal Pemesanan: ${tanggal}%0A` +
+        `UMKM: ${namaUmkm}%0A` +
+        pesan +
+        reminder;
 
     // Kirim transaksi ke backend
     fetch("{{ route('umkm.transaksi', $umkm->id_umkm) }}", {
@@ -142,8 +157,6 @@ function checkoutWA() {
         if (res.success) {
             let wa = "{{ preg_replace('/[^0-9]/', '', $umkm->kontak) }}";
             window.open(`https://wa.me/${wa}?text=${pesan}`, '_blank');
-            // Redirect ke halaman history penjualan admin jika perlu
-            // window.location.href = '/admin/penjualan'; // opsional
         } else {
             alert(res.message || 'Gagal menyimpan transaksi!');
         }
