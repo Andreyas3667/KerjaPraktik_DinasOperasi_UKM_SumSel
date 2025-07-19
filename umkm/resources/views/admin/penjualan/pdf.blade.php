@@ -43,15 +43,14 @@
             </tr>
         </thead>
         <tbody>
+            @php $no = 1; @endphp
             @forelse($transaksis as $trx)
-                @foreach($trx->detail as $i => $detail)
+                @foreach($trx->detail as $detail)
                     <tr>
-                        @if($i == 0)
-                            <td rowspan="{{ $trx->detail->count() }}">{{ $loop->parent->iteration }}</td>
-                            <td rowspan="{{ $trx->detail->count() }}">{{ $trx->umkm->nama_usaha ?? '-' }}</td>
-                            <td rowspan="{{ $trx->detail->count() }}">{{ $trx->umkm->wilayah->nama_wilayah ?? '-' }}</td>
-                            <td rowspan="{{ $trx->detail->count() }}">{{ $trx->tanggal_transaksi }}</td>
-                        @endif
+                        <td>{{ $no }}</td>
+                        <td>{{ $trx->umkm->nama_usaha ?? '-' }}</td>
+                        <td>{{ $trx->umkm->wilayah->nama_wilayah ?? '-' }}</td>
+                        <td>{{ $trx->tanggal_transaksi }}</td>
                         <td>{{ $detail->produk->nama_produk ?? '-' }}</td>
                         <td>{{ number_format($detail->harga_satuan) }}</td>
                         <td>{{ $detail->jumlah }}</td>
@@ -68,6 +67,7 @@
                             @endif
                         </td>
                     </tr>
+                    @php $no++; @endphp
                 @endforeach
             @empty
                 <tr>
