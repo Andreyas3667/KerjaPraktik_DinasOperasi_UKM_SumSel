@@ -18,7 +18,23 @@
 
 @section('content')
 <form method="GET" class="mb-3">
-    <label for="tahun">Tahun:</label>
+    <label for="bulan">Bulan:</label>
+    <select name="bulan" id="bulan" onchange="this.form.submit()">
+        <option value="">Semua Bulan</option>
+        @for($i=1; $i<=12; $i++)
+            <option value="{{ $i }}" {{ request('bulan') == $i ? 'selected' : '' }}>
+                {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
+            </option>
+        @endfor
+    </select>
+    <label for="minggu" class="ml-2">Minggu:</label>
+    <select name="minggu" id="minggu" onchange="this.form.submit()">
+        <option value="">Semua Minggu</option>
+        @for($i=1; $i<=5; $i++)
+            <option value="{{ $i }}" {{ request('minggu') == $i ? 'selected' : '' }}>Minggu {{ $i }}</option>
+        @endfor
+    </select>
+    <label for="tahun" class="ml-2">Tahun:</label>
     <select name="tahun" id="tahun" onchange="this.form.submit()">
         @foreach($tahunList as $t)
             <option value="{{ $t }}" {{ $tahun == $t ? 'selected' : '' }}>{{ $t }}</option>
@@ -75,7 +91,7 @@
         @endif
     </tbody>
 </table>
-
+    
 {{-- filepath: resources/views/admin/dashboard.blade.php --}}
 <div class="card mb-4">
     <div class="card-header font-weight-bold">

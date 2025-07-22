@@ -148,24 +148,72 @@ class DashboardController extends Controller
     // Jika belum ada, tambahkan juga method adminDashboard untuk admin:
     public function adminDashboard(Request $request)
     {
+        $tahun = $request->input('tahun', date('Y'));
+        $bulan = $request->input('bulan');
+        $minggu = $request->input('minggu');
+
+        // Filter tanggal
+        $query = \App\Models\Transaksi::where('status_pembayaran', 'selesai')
+            ->whereYear('tanggal_transaksi', $tahun);
+
+        if ($bulan) {
+            $query->whereMonth('tanggal_transaksi', $bulan);
+        }
+        if ($minggu) {
+            // Minggu ke-n dalam bulan
+            $query->whereRaw('FLOOR((DAY(tanggal_transaksi)-1)/7)+1 = ?', [$minggu]);
+        }
+
+        $penjualan = $query->orderByDesc('tanggal_transaksi')->get();
+
+        // UMKM dengan penjualan terbanyak (dari hasil penjualan yang sudah difilter)
+        $umkmPenjualan = $penjualan->groupBy(fn($trx) => $trx->umkm->nama_usaha ?? '-')
+            ->map(fn($items) => $items->sum('total'));
+
+        // Produk terlaris (dari hasil penjualan yang sudah difilter)
+        $produkTerlaris = collect();
+        foreach ($penjualan as $trx) {
+            foreach ($trx->detail as $d) {
+                $key = $d->produk->nama_produk ?? '-';
+                $produkTerlaris[$key] = ($produkTerlaris[$key] ?? 0) + $d->jumlah;
+            }
+        }
+        // Ambil data produk terlaris beserta info produk (gambar, umkm, wilayah)
+        $produkInfo = [];
+        foreach ($penjualan as $trx) {
+            foreach ($trx->detail as $d) {
+                $produk = $d->produk;
+                $produkInfo[$produk->nama_produk] = [
+                    'nama_produk' => $produk->nama_produk,
+                    'gambar' => $produk->gambar ?? null,
+                    'nama_usaha' => $trx->umkm->nama_usaha ?? '-',
+                    'nama_wilayah' => $trx->umkm->wilayah->nama_wilayah ?? '-',
+                    'jumlah_terjual' => $produkTerlaris[$produk->nama_produk] ?? 0,
+                ];
+            }
+        }
+        // Top 3 produk terlaris
+        $topProdukTerlaris = collect($produkInfo)
+            ->sortByDesc('jumlah_terjual')
+            ->take(3)
+            ->map(function($item) {
+                return (object)$item; // pastikan hasilnya object, bukan array
+            });
+
         // Ambil daftar tahun dari transaksi
-        $tahunList = DB::table('transaksi')
-            ->selectRaw('YEAR(tanggal_transaksi) as tahun')
+        $tahunList = \App\Models\Transaksi::selectRaw('YEAR(tanggal_transaksi) as tahun')
             ->distinct()
             ->orderBy('tahun', 'desc')
-            ->pluck('tahun')
-            ->toArray();
+            ->pluck('tahun');
 
-        // Pilih tahun aktif (default tahun sekarang)
-        $tahun = $request->input('tahun', date('Y'));
-
-        // Data lain yang ingin dikirim ke view, misal penjualan, grafik, dsb.
-        // Contoh:
-        $penjualan = \App\Models\Transaksi::where('status_pembayaran', 'selesai')
-            ->whereYear('tanggal_transaksi', $tahun)
-            ->orderByDesc('tanggal_transaksi')
-            ->get();
-
-        return view('admin.dashboard', compact('tahunList', 'tahun', 'penjualan'));
+        return view('admin.dashboard', [
+            'tahunList' => $tahunList,
+            'tahun' => $tahun,
+            'bulan' => $bulan,
+            'minggu' => $minggu,
+            'penjualan' => $penjualan,
+            'umkmPenjualan' => $umkmPenjualan,
+            'topProdukTerlaris' => $topProdukTerlaris,
+        ]);
     }
 }
