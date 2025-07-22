@@ -104,16 +104,16 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
     $request->fulfill();
     return redirect('/home');
 })->middleware(['auth', 'signed'])->name('verification.verify');
-Route::post('/email/verification-notification', function () {
-    auth()->user()->sendEmailVerificationNotification();
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 // ===================
 // Socialite (Login Sosial Media)
 // ===================
-Route::get('auth/google', [App\Http\Controllers\Auth\SocialiteController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('auth/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
+Route::get('login/google', [SocialiteController::class, 'redirectToGoogle'])->name('login.google');
+Route::get('login/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
 Route::get('login/facebook', [SocialiteController::class, 'redirectToFacebook'])->name('login.facebook');
 Route::get('login/facebook/callback', [SocialiteController::class, 'handleFacebookCallback']);
 Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
