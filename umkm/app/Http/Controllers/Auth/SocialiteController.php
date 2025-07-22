@@ -6,11 +6,8 @@ use App\Http\Controllers\Controller;
 use Socialite;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-<<<<<<< HEAD:umkm/app/Http/Controllers/Auth/SocialiteController.php
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
-=======
->>>>>>> parent of af05817 (Update):umkm/app/Http/Controllers/SocialiteController.php
 
 class SocialiteController extends Controller
 {
@@ -22,10 +19,19 @@ class SocialiteController extends Controller
             [
                 'nama' => $googleUser->getName(),
                 'role' => 'user',
-                // tambahkan field default kosong untuk telepon/alamat
+                'telepon' => '',
+                'alamat' => '',
+                'password' => bcrypt(Str::random(16)),
+                'email_verified_at' => null, // Paksa verifikasi email
             ]
         );
+        if (!$user->hasVerifiedEmail()) {
+            event(new Registered($user)); // Kirim email verifikasi
+        }
         Auth::login($user);
+        if (!$user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice');
+        }
         return redirect()->route('dashboard');
     }
 
